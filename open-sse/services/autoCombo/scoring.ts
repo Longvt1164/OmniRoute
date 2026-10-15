@@ -60,31 +60,30 @@ export interface ScoringWeights {
 }
 
 export const DEFAULT_WEIGHTS: ScoringWeights = {
-  quota: 0.1429,
-  health: 0.1605,
-  costInv: 0.1429,
-  latencyInv: 0.1143,
-  taskFit: 0.0762,
-  stability: 0.0476,
-  tierPriority: 0.0476,
-  tierAffinity: 0.0476,
-  specificityMatch: 0.0476,
-  contextAffinity: 0.0476,
+  quota: 0.1267,
+  health: 0.1423, // Reduced from 0.1605 to make room for reliability/quality
+  costInv: 0.1267,
+  latencyInv: 0.1013,
+  taskFit: 0.0676,
+  stability: 0.0422,
+  tierPriority: 0.0422,
+  tierAffinity: 0.0422,
+  specificityMatch: 0.0422,
+  contextAffinity: 0.0422,
   cacheAffinity: 0,
-  sessionAvailability: 0.0476,
+  sessionAvailability: 0.0422,
   resetWindowAffinity: 0,
-  connectionDensity: 0.0476,
-  // Shifted from `health` (0.1905 → 0.1605): availability stays dominant, and
-  // the new quality signal (observed output quality over time) gets a real,
-  // if smaller, vote. Sum remains exactly 1.0.
-  quality: 0.03,
-  // Declared but silent in DEFAULT (like `cacheAffinity`/`resetWindowAffinity`):
-  // every candidate already carries a measured failure rate (24h of usage
-  // history behind a ten-sample floor, real-time metrics otherwise) and the
-  // scorer had no way to read it. Which weight it deserves is a product call
-  // backed by measurement, so DEFAULT ships at 0 and leaves the ranking as
-  // it was; `reliability-first` ships at 0.04 and generic packs at 0.03.
-  reliability: 0,
+  connectionDensity: 0.0422,
+  // Increased from 0.03 to 0.06: output quality matters more for user experience.
+  // Penalizes models that frequently produce low-quality responses.
+  quality: 0.06,
+  // ENABLED: reliability is now weighted (was 0). Increased to 0.08 to strongly
+  // penalize models with recent failures (429, 5xx, auth errors). This makes
+  // OmniRoute prioritize models that are ACTUALLY WORKING vs just "available in catalog".
+  // A model with 50% failure rate in last 24h gets 0.5 reliability score, losing
+  // 0.08 * 0.5 = 0.04 (4%) from final score — enough to fall below healthier alternatives.
+  // Sum of all weights = 1.0 (verified).
+  reliability: 0.08,
 };
 
 /** Normalize independently configured UI weights into a scoring distribution. */
@@ -111,7 +110,7 @@ export interface ProviderCandidate {
   model: string;
   quotaRemaining: number; // percentage 0..100
   quotaTotal: number;
-  circuitBreakerState: "CLOSED" | "HALF_OPEN" | "OPEN";
+  circuitBreakerState: "CLOSED" | "HALF_OPEN" | "OPEN" | "DEGRADED";
   costPer1MTokens: number;
   p95LatencyMs: number;
   /** Average time-to-first-token in ms, when stream telemetry is available. */
@@ -288,12 +287,18 @@ export function computePoolMaxima(pool: ProviderCandidate[]): PoolMaxima {
 }
 
 /**
- * Bound an observed failure rate to [0,1], treating anything missing or
- * non-finite as 0 (nothing observed has failed). Mirrors `toBoundedRate` in
- * `speedRanking.ts` so both consumers of the same signal agree, including on
- * garbage input.
+ * Reliability factor from the observed failure rate only.
+ *
+ * Circuit breaker state is deliberately NOT folded in here: it is a separate,
+ * immediate signal already carried by the `health` factor (CLOSED=1.0,
+ * DEGRADED=0.7, HALF_OPEN=0.5, OPEN=0.0). Penalizing it here as well would
+ * double-count the same failure in any weighted combination, and would diverge
+ * from `speedRanking.ts`, which keeps `reliability = 1 - failureRate` and
+ * `health = healthScoreFor(state)` apart.
+ *
+ * Mirrors `toBoundedRate` in `speedRanking.ts`, including on garbage input:
+ * anything missing/non-finite/negative reads as "nothing observed" (1.0).
  */
-/** Reliability factor from an observed failure (else error) rate; absent reads fully reliable. */
 export function reliabilityFactor(candidate: {
   failureRate?: number | null;
   errorRate?: number | null;
@@ -301,6 +306,7 @@ export function reliabilityFactor(candidate: {
   return clamp01(1 - boundedRate(candidate.failureRate ?? candidate.errorRate));
 }
 
+/** Bound an observed failure rate to [0,1]; missing/non-finite/negative reads as 0. */
 function boundedRate(value: number | null | undefined): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) return 0;
   return Math.min(1, value);
@@ -325,9 +331,11 @@ export function calculateFactors(
     health:
       candidate.circuitBreakerState === "CLOSED"
         ? 1.0
-        : candidate.circuitBreakerState === "HALF_OPEN"
-          ? 0.5
-          : 0.0,
+        : candidate.circuitBreakerState === "DEGRADED"
+          ? 0.7 // Early warning — still usable but elevated failures
+          : candidate.circuitBreakerState === "HALF_OPEN"
+            ? 0.5 // Recovering from failures
+            : 0.0, // OPEN — provider is down
     costInv: clamp01(1 - candidate.costPer1MTokens / maxCost),
     latencyInv: clamp01(1 - candidate.p95LatencyMs / maxLatency),
     taskFit: clamp01(getTaskFitness(candidate.model, taskType)),

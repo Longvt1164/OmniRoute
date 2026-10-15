@@ -166,7 +166,7 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 ## 仕組み（永続化された Auto-Combo）
 
-Auto-Combo Engine は、**16 要素のスコアリング関数**（`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS` で定義）を使用して、リクエストごとに最適なプロバイダー／モデルを動的に選択します。デフォルトの重みの合計は `1.0` で、カスタムの重みは `normalizeScoringWeights()` によって再正規化されます。16 要素のうち、`cacheAffinity` と `resetWindowAffinity` のデフォルトの重みは `0` です。`reliability` は `DEFAULT_WEIGHTS` では `0` ですが、汎用パックでは `0.03`、`reliability-first` では `0.04` です。また、`quality` はパックでは `0.02`（`quality-first` では `0.03`）です。これらもすべての候補について計算され、`cacheAffinity` はスコア外でプロンプトキャッシュの重複排除を制御します。そのため、デフォルトで重みがゼロの要素は単にデフォルトではスコアに寄与しませんが、パックでは寄与します。
+Auto-Combo Engine は、**16 要素のスコアリング関数**（`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS` で定義）を使用して、リクエストごとに最適なプロバイダー／モデルを動的に選択します。デフォルトの重みの合計は `1.0` で、カスタムの重みは `normalizeScoringWeights()` によって再正規化されます。16 要素のうち、`cacheAffinity` と `resetWindowAffinity` のデフォルトの重みは `0` です。`reliability` は `DEFAULT_WEIGHTS` では `0.08` ですが、汎用パックでは `0.03`、`reliability-first` では `0.04` です。また、`quality` はパックでは `0.02`（`quality-first` では `0.03`）です。これらもすべての候補について計算され、`cacheAffinity` はスコア外でプロンプトキャッシュの重複排除を制御します。そのため、デフォルトで重みがゼロの要素は単にデフォルトではスコアに寄与しませんが、パックでは寄与します。
 
 ![Auto-Combo の 16 要素スコアリング](../diagrams/exported/auto-combo-scoring.svg)
 
@@ -174,24 +174,24 @@ Auto-Combo Engine は、**16 要素のスコアリング関数**（`open-sse/ser
 
 | 要素                  | デフォルトの重み | 説明                                                                                                                                                                                                            |
 | :-------------------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quota`               | 0.1429           | 残りのクォータ／レート制限の余裕 [0..1]                                                                                                                                                                         |
-| `health`              | 0.1605           | サーキットブレーカーから得られるヘルススコア（CLOSED=1.0、HALF_OPEN=0.5、OPEN=0.0）                                                                                                                             |
-| `costInv`             | 0.1429           | **ブレンドされた**コストの逆数（入力トークン価格 60% + 出力トークン価格 40%、正規化済み）— 安価であるほどスコアが高い                                                                                           |
-| `latencyInv`          | 0.1143           | プールに対して正規化された p95 レイテンシーの逆数 — 高速であるほどスコアが高い                                                                                                                                  |
-| `taskFit`             | 0.0762           | タスク種別への適合度（コーディング、レビュー、計画、分析、デバッグ、ドキュメント）                                                                                                                              |
-| `stability`           | 0.0476           | レイテンシーの標準偏差から算出される分散ベースの安定性 — 応答時間の変動が大きい候補ほどスコアが低い                                                                                                             |
-| `tierPriority`        | 0.0476           | アカウント階層の優先度 — Ultra=1.0、Pro=0.67、Standard=0.33、Free=0.0                                                                                                                                           |
-| `tierAffinity`        | 0.0476           | 候補の階層と、マニフェストで推奨される階層との親和性                                                                                                                                                            |
-| `specificityMatch`    | 0.0476           | リクエストの特異性（マニフェストのヒント）とモデル階層との一致度                                                                                                                                                |
-| `contextAffinity`     | 0.0476           | リクエストで必要とされるコンテキストウィンドウと、モデルのコンテキストウィンドウとの親和性                                                                                                                      |
-| `sessionAvailability` | 0.0476           | このセッションにおける候補接続の OAuth セッション可用性（`getOAuthSessionAvailability()`。OAuth 以外の接続のスコアは 1.0）                                                                                      |
-| `connectionDensity`   | 0.0476           | 同一プロバイダーの接続間で負荷を分散（集中を回避）                                                                                                                                                              |
+| `quota`               | 0.1267           | 残りのクォータ／レート制限の余裕 [0..1]                                                                                                                                                                         |
+| `health`              | 0.1423           | サーキットブレーカーから得られるヘルススコア（CLOSED=1.0、HALF_OPEN=0.5、OPEN=0.0）                                                                                                                             |
+| `costInv`             | 0.1267           | **ブレンドされた**コストの逆数（入力トークン価格 60% + 出力トークン価格 40%、正規化済み）— 安価であるほどスコアが高い                                                                                           |
+| `latencyInv`          | 0.1013           | プールに対して正規化された p95 レイテンシーの逆数 — 高速であるほどスコアが高い                                                                                                                                  |
+| `taskFit`             | 0.0676           | タスク種別への適合度（コーディング、レビュー、計画、分析、デバッグ、ドキュメント）                                                                                                                              |
+| `stability`           | 0.0422           | レイテンシーの標準偏差から算出される分散ベースの安定性 — 応答時間の変動が大きい候補ほどスコアが低い                                                                                                             |
+| `tierPriority`        | 0.0422           | アカウント階層の優先度 — Ultra=1.0、Pro=0.67、Standard=0.33、Free=0.0                                                                                                                                           |
+| `tierAffinity`        | 0.0422           | 候補の階層と、マニフェストで推奨される階層との親和性                                                                                                                                                            |
+| `specificityMatch`    | 0.0422           | リクエストの特異性（マニフェストのヒント）とモデル階層との一致度                                                                                                                                                |
+| `contextAffinity`     | 0.0422           | リクエストで必要とされるコンテキストウィンドウと、モデルのコンテキストウィンドウとの親和性                                                                                                                      |
+| `sessionAvailability` | 0.0422           | このセッションにおける候補接続の OAuth セッション可用性（`getOAuthSessionAvailability()`。OAuth 以外の接続のスコアは 1.0）                                                                                      |
+| `connectionDensity`   | 0.0422           | 同一プロバイダーの接続間で負荷を分散（集中を回避）                                                                                                                                                              |
 | `cacheAffinity`       | 0.00             | このリクエストのプロンプトキャッシュのプレフィックスを保持している可能性が最も高い接続に対する、ランデブーハッシュによる親和性（`open-sse/services/combo/promptCacheAffinity.ts`）。デフォルトでは無効（#8008） |
 | `resetWindowAffinity` | 0.00             | クォータのリセット期間が有利な接続を優先するバイアス（デフォルトでは無効）                                                                                                                                      |
-| `quality`             | 0.03             | ルーティングイベントの品質トラッカーから得られる、フィードバック駆動の出力品質シグナル。観測データがない候補には中立値の 0.5 が与えられる                                                                       |
-| `reliability`         | 0.00             | 10 サンプルを最低条件とする過去 24 時間の使用履歴（それ以外の場合はリアルタイム指標）から得られる、観測された成功割合 `1 - failureRate`。観測データがない候補は 1.0 と見なされる。デフォルトでは無効            |
+| `quality`             | 0.06             | ルーティングイベントの品質トラッカーから得られる、フィードバック駆動の出力品質シグナル。観測データがない候補には中立値の 0.5 が与えられる                                                                       |
+| `reliability`         | 0.08             | 10 サンプルを最低条件とする過去 24 時間の使用履歴（それ以外の場合はリアルタイム指標）から得られる、観測された成功割合 `1 - failureRate`。観測データがない候補は 1.0 と見なされる。デフォルトでは無効            |
 
-**合計：** `DEFAULT_WEIGHTS` で宣言されているとおり、`0.1429 + 0.1605 + 0.1429 + 0.1143 + 0.0762 + (7 × 0.0476) + 0.00 + 0.00 + 0.03 + 0.00 = 1.0` です。ユーザーが設定した重みは、スコアリングの前に `normalizeScoringWeights()` によって分布として再正規化されます。
+**合計：** `DEFAULT_WEIGHTS` で宣言されているとおり、`0.1267 + 0.1423 + 0.1267 + 0.1013 + 0.0676 + (7 × 0.0422) + 0.00 + 0.00 + 0.06 + 0.08 = 1.0` です。ユーザーが設定した重みは、スコアリングの前に `normalizeScoringWeights()` によって分布として再正規化されます。
 
 ## モードパック
 
@@ -217,7 +217,7 @@ Auto-Combo Engine は、**16 要素のスコアリング関数**（`open-sse/ser
 
 注記:
 
-- **パックには `quality` と `reliability` が含まれており**（`quality 0.02`、`quality-first 0.03`、`reliability 0.03`、`reliability-first 0.04`）、重みマップを全面的に置き換えます（マージではなく `weights = pack`）。`DEFAULT_WEIGHTS` には `quality 0.03 / reliability 0` が含まれています。`balanced`/`default` を選択するとこれらのデフォルト値が維持され、パックを選択すると上記のパック値が使用されます。コールドプール（まだ観測値がなく、`quality 0.5`、`reliability 1` の状態）では、この2つの要素によって、汎用パックでは `+0.04`（`0.03 + 0.01`）、`quality-first` では `+0.045`、`reliability-first` では `+0.05` が加算されます。
+- **パックには `quality` と `reliability` が含まれており**（`quality 0.02`、`quality-first 0.03`、`reliability 0.03`、`reliability-first 0.04`）、重みマップを全面的に置き換えます（マージではなく `weights = pack`）。`DEFAULT_WEIGHTS` には `quality 0.06 / reliability 0.08` が含まれています。`balanced`/`default` を選択するとこれらのデフォルト値が維持され、パックを選択すると上記のパック値が使用されます。コールドプール（まだ観測値がなく、`quality 0.5`、`reliability 1` の状態）では、この2つの要素によって、汎用パックでは `+0.04`（`0.03 + 0.01`）、`quality-first` では `+0.045`、`reliability-first` では `+0.05` が加算されます。
 - `tierAffinity`、`specificityMatch`、`resetWindowAffinity` は、すべてのパックで明示的に `0` に設定されています。
 - 各パックの重点を一覧で示します:
   - **ship-fast** → latencyInv 0.3048 + health 0.2667（低レイテンシで正常な接続）
@@ -711,7 +711,7 @@ SLA対応フィールド:
 
 ## ティアと Auto-Combo の関係
 
-16要素のスコアリング関数（`open-sse/services/autoCombo/scoring.ts`）では、ティアへの所属を2つのシグナルとして扱います：`tierPriority`（0.0476）と `tierAffinity`（0.0476）です。`DEFAULT_WEIGHTS` の完全なセットについては、上記の正規の[スコアリング要素テーブル](#how-it-works-persisted-auto-combos)を参照してください。パックごとのオーバーライド（ship-fast/cost-saver/quality-first/offline-friendly）は、「パックごとの重みプロファイル」テーブルに記載されています。
+16要素のスコアリング関数（`open-sse/services/autoCombo/scoring.ts`）では、ティアへの所属を2つのシグナルとして扱います：`tierPriority`（0.0422）と `tierAffinity`（0.0422）です。`DEFAULT_WEIGHTS` の完全なセットについては、上記の正規の[スコアリング要素テーブル](#how-it-works-persisted-auto-combos)を参照してください。パックごとのオーバーライド（ship-fast/cost-saver/quality-first/offline-friendly）は、「パックごとの重みプロファイル」テーブルに記載されています。
 
 ティアだけでは、**必ずしも** Tier 1 が最初になるわけではありません。Tier 1 のレイテンシーが悪い場合や、コストと品質のバランスが最適でない場合は、Tier 2 が選ばれます。ティア順を強制するには、コンボ戦略 `priority` を使用し、プロバイダーをティア順に並べてください。
 

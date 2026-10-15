@@ -193,7 +193,7 @@ Aceste date alimentează mecanismul de evaluare auto-combo drept factorul de eva
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` în
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Suma rămâne 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Suma rămâne 1.0.
 - `buildAutoCandidates` completează `candidate.quality` din tracker; candidații
   fără date primesc implicit valoarea neutră **0.5** (un candidat fără istoric nu este nici favorizat, nici
   penalizat).

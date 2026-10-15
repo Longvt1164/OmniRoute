@@ -189,7 +189,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`를 노출합�
 
 - `open-sse/services/autoCombo/scoring.ts`의
   `ScoringFactors.quality` / `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. 합계는 1.0으로 유지됩니다.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. 합계는 1.0으로 유지됩니다.
 - `buildAutoCandidates`는 트래커에서 가져온 값으로 `candidate.quality`를 채웁니다. 데이터가
   없는 후보는 기본적으로 중립값인 **0.5**를 사용합니다(콜드 후보는 이득도
   불이익도 받지 않음).

@@ -192,7 +192,7 @@ Dan jidħol fil-kalkolatur tal-punteġġ auto-combo bħala l-fattur ta' punteġ�
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` f'
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Is-somma tibqa' 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Is-somma tibqa' 1.0.
 - `buildAutoCandidates` jimla `candidate.quality` mit-tracker; kandidati mingħajr
   dejta jieħdu l-valur newtrali awtomatiku ta' **0.5** (kandidat ġdid la jingħata
   spinta u lanqas jiġi penalizzat).

@@ -179,7 +179,7 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 ## ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ (ਸਥਾਈ Auto-Combos)
 
-Auto-Combo Engine ਇੱਕ **16-ਕਾਰਕ ਸਕੋਰਿੰਗ ਫੰਕਸ਼ਨ** (`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS` ਵਿੱਚ ਪਰਿਭਾਸ਼ਿਤ) ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਹਰ ਬੇਨਤੀ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ provider/model ਨੂੰ ਗਤੀਸ਼ੀਲ ਢੰਗ ਨਾਲ ਚੁਣਦਾ ਹੈ। ਡਿਫਾਲਟ ਭਾਰਾਂ ਦਾ ਜੋੜ `1.0` ਹੈ; ਕਸਟਮ ਭਾਰਾਂ ਨੂੰ `normalizeScoringWeights()` ਦੁਆਰਾ ਮੁੜ ਨਾਰਮਲਾਈਜ਼ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸੋਲ੍ਹਾਂ ਵਿੱਚੋਂ ਦੋ — `cacheAffinity` ਅਤੇ `resetWindowAffinity` — ਦਾ ਡਿਫਾਲਟ ਭਾਰ `0` ਹੈ; `reliability` ਦਾ `DEFAULT_WEIGHTS` ਵਿੱਚ ਭਾਰ `0` ਹੈ, ਪਰ ਆਮ ਪੈਕਾਂ ਵਿੱਚ `0.03` ਅਤੇ `reliability-first` ਵਿੱਚ `0.04` ਹੈ, ਅਤੇ `quality` ਦਾ ਪੈਕਾਂ ਵਿੱਚ ਭਾਰ `0.02` (`quality-first` ਵਿੱਚ `0.03`) ਹੈ: ਫਿਰ ਵੀ ਹਰ ਉਮੀਦਵਾਰ ਲਈ ਇਨ੍ਹਾਂ ਦੀ ਗਣਨਾ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਅਤੇ `cacheAffinity` ਸਕੋਰ ਤੋਂ ਬਾਹਰ prompt-cache ਡੀਡੁਪਲੀਕੇਸ਼ਨ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰਦਾ ਹੈ, ਇਸ ਲਈ ਸਿਫ਼ਰ-ਡਿਫਾਲਟ ਵਾਲੇ ਕਾਰਕ ਡਿਫਾਲਟ ਤੌਰ 'ਤੇ ਵੋਟ ਨਹੀਂ ਦਿੰਦੇ, ਜਦਕਿ ਪੈਕ ਦਿੰਦੇ ਹਨ।
+Auto-Combo Engine ਇੱਕ **16-ਕਾਰਕ ਸਕੋਰਿੰਗ ਫੰਕਸ਼ਨ** (`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS` ਵਿੱਚ ਪਰਿਭਾਸ਼ਿਤ) ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਹਰ ਬੇਨਤੀ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ provider/model ਨੂੰ ਗਤੀਸ਼ੀਲ ਢੰਗ ਨਾਲ ਚੁਣਦਾ ਹੈ। ਡਿਫਾਲਟ ਭਾਰਾਂ ਦਾ ਜੋੜ `1.0` ਹੈ; ਕਸਟਮ ਭਾਰਾਂ ਨੂੰ `normalizeScoringWeights()` ਦੁਆਰਾ ਮੁੜ ਨਾਰਮਲਾਈਜ਼ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸੋਲ੍ਹਾਂ ਵਿੱਚੋਂ ਦੋ — `cacheAffinity` ਅਤੇ `resetWindowAffinity` — ਦਾ ਡਿਫਾਲਟ ਭਾਰ `0` ਹੈ; `reliability` ਦਾ `DEFAULT_WEIGHTS` ਵਿੱਚ ਭਾਰ `0.08` ਹੈ, ਪਰ ਆਮ ਪੈਕਾਂ ਵਿੱਚ `0.03` ਅਤੇ `reliability-first` ਵਿੱਚ `0.04` ਹੈ, ਅਤੇ `quality` ਦਾ ਪੈਕਾਂ ਵਿੱਚ ਭਾਰ `0.02` (`quality-first` ਵਿੱਚ `0.03`) ਹੈ: ਫਿਰ ਵੀ ਹਰ ਉਮੀਦਵਾਰ ਲਈ ਇਨ੍ਹਾਂ ਦੀ ਗਣਨਾ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਅਤੇ `cacheAffinity` ਸਕੋਰ ਤੋਂ ਬਾਹਰ prompt-cache ਡੀਡੁਪਲੀਕੇਸ਼ਨ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰਦਾ ਹੈ, ਇਸ ਲਈ ਸਿਫ਼ਰ-ਡਿਫਾਲਟ ਵਾਲੇ ਕਾਰਕ ਡਿਫਾਲਟ ਤੌਰ 'ਤੇ ਵੋਟ ਨਹੀਂ ਦਿੰਦੇ, ਜਦਕਿ ਪੈਕ ਦਿੰਦੇ ਹਨ।
 
 ![Auto-Combo ਦੀ 16-ਕਾਰਕ ਸਕੋਰਿੰਗ](../diagrams/exported/auto-combo-scoring.svg)
 
@@ -187,24 +187,24 @@ Auto-Combo Engine ਇੱਕ **16-ਕਾਰਕ ਸਕੋਰਿੰਗ ਫੰਕਸ
 
 | ਕਾਰਕ                  | ਡਿਫਾਲਟ ਭਾਰ | ਵੇਰਵਾ                                                                                                                                                                                                             |
 | :-------------------- | :--------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quota`               | 0.1429     | ਬਾਕੀ quota / rate-limit ਸਮਰੱਥਾ [0..1]                                                                                                                                                                             |
-| `health`              | 0.1605     | circuit breaker ਤੋਂ ਸਿਹਤ ਸਕੋਰ (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                                               |
-| `costInv`             | 0.1429     | ਉਲਟੀ **ਮਿਸ਼ਰਤ** ਲਾਗਤ (60% ਇਨਪੁੱਟ + 40% ਆਉਟਪੁੱਟ token ਕੀਮਤ, ਨਾਰਮਲਾਈਜ਼ ਕੀਤੀ) — ਘੱਟ ਲਾਗਤ = ਵੱਧ ਸਕੋਰ                                                                                                                  |
-| `latencyInv`          | 0.1143     | pool ਦੇ ਮੁਕਾਬਲੇ ਨਾਰਮਲਾਈਜ਼ ਕੀਤੀ ਉਲਟੀ p95 latency — ਵੱਧ ਤੇਜ਼ = ਵੱਧ ਸਕੋਰ                                                                                                                                             |
-| `taskFit`             | 0.0762     | ਕਾਰਜ-ਕਿਸਮ ਲਈ ਉਪਯੋਗਤਾ (ਕੋਡਿੰਗ, ਸਮੀਖਿਆ, ਯੋਜਨਾ, ਵਿਸ਼ਲੇਸ਼ਣ, ਡੀਬੱਗਿੰਗ, ਦਸਤਾਵੇਜ਼)                                                                                                                                       |
-| `stability`           | 0.0476     | latency ਦੇ ਮਿਆਰੀ ਵਿਸਥਾਪਨ ਤੋਂ variance-ਅਧਾਰਿਤ ਸਥਿਰਤਾ — ਜਿਸ ਉਮੀਦਵਾਰ ਦਾ ਜਵਾਬ ਸਮਾਂ ਵੱਧ ਉਤਰਾਅ-ਚੜ੍ਹਾਅ ਕਰਦਾ ਹੈ, ਉਸਨੂੰ ਘੱਟ ਸਕੋਰ ਮਿਲਦਾ ਹੈ                                                                                  |
-| `tierPriority`        | 0.0476     | ਖਾਤਾ-tier ਤਰਜੀਹ — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                                                    |
-| `tierAffinity`        | 0.0476     | ਉਮੀਦਵਾਰ ਦੇ tier ਅਤੇ manifest ਦੁਆਰਾ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੇ tier ਵਿਚਕਾਰ ਅਨੁਕੂਲਤਾ                                                                                                                                             |
-| `specificityMatch`    | 0.0476     | ਬੇਨਤੀ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ (manifest ਸੰਕੇਤ) ਅਤੇ model tier ਵਿਚਕਾਰ ਮੇਲ                                                                                                                                                     |
-| `contextAffinity`     | 0.0476     | ਬੇਨਤੀ ਦੀ context-window ਲੋੜ ਅਤੇ model ਦੀ context window ਵਿਚਕਾਰ ਅਨੁਕੂਲਤਾ                                                                                                                                           |
-| `sessionAvailability` | 0.0476     | ਇਸ session ਲਈ ਉਮੀਦਵਾਰ connection ਦੀ OAuth session ਉਪਲਬਧਤਾ (`getOAuthSessionAvailability()`; ਗੈਰ-OAuth connections ਨੂੰ 1.0 ਸਕੋਰ ਮਿਲਦਾ ਹੈ)                                                                          |
-| `connectionDensity`   | 0.0476     | ਇੱਕੋ provider ਦੇ connections ਵਿਚਕਾਰ ਲੋਡ ਵੰਡਦਾ ਹੈ (ਕੇਂਦਰੀਕਰਨ-ਵਿਰੋਧੀ)                                                                                                                                               |
+| `quota`               | 0.1267     | ਬਾਕੀ quota / rate-limit ਸਮਰੱਥਾ [0..1]                                                                                                                                                                             |
+| `health`              | 0.1423     | circuit breaker ਤੋਂ ਸਿਹਤ ਸਕੋਰ (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                                               |
+| `costInv`             | 0.1267     | ਉਲਟੀ **ਮਿਸ਼ਰਤ** ਲਾਗਤ (60% ਇਨਪੁੱਟ + 40% ਆਉਟਪੁੱਟ token ਕੀਮਤ, ਨਾਰਮਲਾਈਜ਼ ਕੀਤੀ) — ਘੱਟ ਲਾਗਤ = ਵੱਧ ਸਕੋਰ                                                                                                                  |
+| `latencyInv`          | 0.1013     | pool ਦੇ ਮੁਕਾਬਲੇ ਨਾਰਮਲਾਈਜ਼ ਕੀਤੀ ਉਲਟੀ p95 latency — ਵੱਧ ਤੇਜ਼ = ਵੱਧ ਸਕੋਰ                                                                                                                                             |
+| `taskFit`             | 0.0676     | ਕਾਰਜ-ਕਿਸਮ ਲਈ ਉਪਯੋਗਤਾ (ਕੋਡਿੰਗ, ਸਮੀਖਿਆ, ਯੋਜਨਾ, ਵਿਸ਼ਲੇਸ਼ਣ, ਡੀਬੱਗਿੰਗ, ਦਸਤਾਵੇਜ਼)                                                                                                                                       |
+| `stability`           | 0.0422     | latency ਦੇ ਮਿਆਰੀ ਵਿਸਥਾਪਨ ਤੋਂ variance-ਅਧਾਰਿਤ ਸਥਿਰਤਾ — ਜਿਸ ਉਮੀਦਵਾਰ ਦਾ ਜਵਾਬ ਸਮਾਂ ਵੱਧ ਉਤਰਾਅ-ਚੜ੍ਹਾਅ ਕਰਦਾ ਹੈ, ਉਸਨੂੰ ਘੱਟ ਸਕੋਰ ਮਿਲਦਾ ਹੈ                                                                                  |
+| `tierPriority`        | 0.0422     | ਖਾਤਾ-tier ਤਰਜੀਹ — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                                                    |
+| `tierAffinity`        | 0.0422     | ਉਮੀਦਵਾਰ ਦੇ tier ਅਤੇ manifest ਦੁਆਰਾ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੇ tier ਵਿਚਕਾਰ ਅਨੁਕੂਲਤਾ                                                                                                                                             |
+| `specificityMatch`    | 0.0422     | ਬੇਨਤੀ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ (manifest ਸੰਕੇਤ) ਅਤੇ model tier ਵਿਚਕਾਰ ਮੇਲ                                                                                                                                                     |
+| `contextAffinity`     | 0.0422     | ਬੇਨਤੀ ਦੀ context-window ਲੋੜ ਅਤੇ model ਦੀ context window ਵਿਚਕਾਰ ਅਨੁਕੂਲਤਾ                                                                                                                                           |
+| `sessionAvailability` | 0.0422     | ਇਸ session ਲਈ ਉਮੀਦਵਾਰ connection ਦੀ OAuth session ਉਪਲਬਧਤਾ (`getOAuthSessionAvailability()`; ਗੈਰ-OAuth connections ਨੂੰ 1.0 ਸਕੋਰ ਮਿਲਦਾ ਹੈ)                                                                          |
+| `connectionDensity`   | 0.0422     | ਇੱਕੋ provider ਦੇ connections ਵਿਚਕਾਰ ਲੋਡ ਵੰਡਦਾ ਹੈ (ਕੇਂਦਰੀਕਰਨ-ਵਿਰੋਧੀ)                                                                                                                                               |
 | `cacheAffinity`       | 0.00       | ਉਸ connection ਵੱਲ Rendezvous-hash ਅਨੁਕੂਲਤਾ, ਜਿਸ ਕੋਲ ਪਹਿਲਾਂ ਹੀ ਇਸ ਬੇਨਤੀ ਦਾ prompt-cache prefix ਹੋਣ ਦੀ ਸਭ ਤੋਂ ਵੱਧ ਸੰਭਾਵਨਾ ਹੈ (`open-sse/services/combo/promptCacheAffinity.ts`); ਡਿਫਾਲਟ ਤੌਰ 'ਤੇ ਅਸਮਰੱਥ (#8008)      |
 | `resetWindowAffinity` | 0.00       | ਉਨ੍ਹਾਂ connections ਵੱਲ ਝੁਕਾਅ, ਜਿਨ੍ਹਾਂ ਦੀ quota reset window ਅਨੁਕੂਲ ਹੈ (ਡਿਫਾਲਟ ਤੌਰ 'ਤੇ ਅਸਮਰੱਥ)                                                                                                                     |
-| `quality`             | 0.03       | routing-event ਗੁਣਵੱਤਾ tracker ਤੋਂ feedback-ਅਧਾਰਿਤ ਆਉਟਪੁੱਟ-ਗੁਣਵੱਤਾ ਸੰਕੇਤ; ਬਿਨਾਂ ਨਿਰੀਖਣਾਂ ਵਾਲੇ ਉਮੀਦਵਾਰਾਂ ਨੂੰ ਨਿਰਪੱਖ 0.5 ਮਿਲਦਾ ਹੈ                                                                                    |
-| `reliability`         | 0.00       | ਦਸ-sample ਦੀ ਘੱਟੋ-ਘੱਟ ਸੀਮਾ ਪਿੱਛੇ 24h ਦੇ ਵਰਤੋਂ ਇਤਿਹਾਸ ਤੋਂ ਦੇਖਿਆ ਗਿਆ ਸਫਲਤਾ ਅਨੁਪਾਤ, `1 - failureRate` (ਨਹੀਂ ਤਾਂ real-time metrics); ਬਿਨਾਂ ਨਿਰੀਖਣਾਂ ਵਾਲੇ ਉਮੀਦਵਾਰਾਂ ਲਈ ਇਸਨੂੰ 1.0 ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ। ਡਿਫਾਲਟ ਤੌਰ 'ਤੇ ਅਸਮਰੱਥ |
+| `quality`             | 0.06       | routing-event ਗੁਣਵੱਤਾ tracker ਤੋਂ feedback-ਅਧਾਰਿਤ ਆਉਟਪੁੱਟ-ਗੁਣਵੱਤਾ ਸੰਕੇਤ; ਬਿਨਾਂ ਨਿਰੀਖਣਾਂ ਵਾਲੇ ਉਮੀਦਵਾਰਾਂ ਨੂੰ ਨਿਰਪੱਖ 0.5 ਮਿਲਦਾ ਹੈ                                                                                    |
+| `reliability`         | 0.08       | ਦਸ-sample ਦੀ ਘੱਟੋ-ਘੱਟ ਸੀਮਾ ਪਿੱਛੇ 24h ਦੇ ਵਰਤੋਂ ਇਤਿਹਾਸ ਤੋਂ ਦੇਖਿਆ ਗਿਆ ਸਫਲਤਾ ਅਨੁਪਾਤ, `1 - failureRate` (ਨਹੀਂ ਤਾਂ real-time metrics); ਬਿਨਾਂ ਨਿਰੀਖਣਾਂ ਵਾਲੇ ਉਮੀਦਵਾਰਾਂ ਲਈ ਇਸਨੂੰ 1.0 ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ। ਡਿਫਾਲਟ ਤੌਰ 'ਤੇ ਅਸਮਰੱਥ |
 
-**ਜੋੜ:** `0.1429 + 0.1605 + 0.1429 + 0.1143 + 0.0762 + (7 × 0.0476) + 0.00 + 0.00 + 0.03 + 0.00 = 1.0`, ਜਿਵੇਂ `DEFAULT_WEIGHTS` ਵਿੱਚ ਘੋਸ਼ਿਤ ਹੈ; ਸਕੋਰਿੰਗ ਤੋਂ ਪਹਿਲਾਂ ਵਰਤੋਂਕਾਰ ਦੁਆਰਾ ਸੰਰਚਿਤ ਭਾਰਾਂ ਨੂੰ `normalizeScoringWeights()` ਦੁਆਰਾ ਮੁੜ ਨਾਰਮਲਾਈਜ਼ ਕਰਕੇ ਇੱਕ ਵੰਡ ਵਿੱਚ ਬਦਲਿਆ ਜਾਂਦਾ ਹੈ।
+**ਜੋੜ:** `0.1267 + 0.1423 + 0.1267 + 0.1013 + 0.0676 + (7 × 0.0422) + 0.00 + 0.00 + 0.06 + 0.08 = 1.0`, ਜਿਵੇਂ `DEFAULT_WEIGHTS` ਵਿੱਚ ਘੋਸ਼ਿਤ ਹੈ; ਸਕੋਰਿੰਗ ਤੋਂ ਪਹਿਲਾਂ ਵਰਤੋਂਕਾਰ ਦੁਆਰਾ ਸੰਰਚਿਤ ਭਾਰਾਂ ਨੂੰ `normalizeScoringWeights()` ਦੁਆਰਾ ਮੁੜ ਨਾਰਮਲਾਈਜ਼ ਕਰਕੇ ਇੱਕ ਵੰਡ ਵਿੱਚ ਬਦਲਿਆ ਜਾਂਦਾ ਹੈ।
 
 ## ਮੋਡ ਪੈਕ
 
@@ -230,7 +230,7 @@ Auto-Combo Engine ਇੱਕ **16-ਕਾਰਕ ਸਕੋਰਿੰਗ ਫੰਕਸ
 
 ਨੋਟ:
 
-- **ਪੈਕਾਂ ਵਿੱਚ `quality` ਅਤੇ `reliability` ਸ਼ਾਮਲ ਹਨ** (`quality 0.02`, `quality-first 0.03`; `reliability 0.03`, `reliability-first 0.04`) ਅਤੇ ਇਹ ਵੇਟ ਮੈਪ ਨੂੰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬਦਲਦੇ ਹਨ (`weights = pack`, ਮਰਜ ਨਹੀਂ)। `DEFAULT_WEIGHTS` ਵਿੱਚ `quality 0.03 / reliability 0` ਹੈ; `balanced`/`default` ਚੁਣਨ ਨਾਲ ਉਹ ਡਿਫਾਲਟ ਬਰਕਰਾਰ ਰਹਿੰਦੇ ਹਨ, ਜਦਕਿ ਕੋਈ ਪੈਕ ਚੁਣਨ ਨਾਲ ਉੱਪਰ ਦਿੱਤੇ ਉਸ ਪੈਕ ਦੇ ਮੁੱਲ ਵਰਤੇ ਜਾਂਦੇ ਹਨ। ਕੋਲਡ ਪੂਲ ਵਿੱਚ (ਹਾਲੇ ਕੋਈ ਨਿਰੀਖਣ ਨਹੀਂ, ਇਸ ਲਈ `quality 0.5` ਅਤੇ `reliability 1`) ਇਹ ਦੋ ਕਾਰਕ ਕਿਸੇ ਆਮ ਪੈਕ ਅਧੀਨ `+0.04` (`0.03 + 0.01`), `quality-first` ਅਧੀਨ `+0.045` ਅਤੇ `reliability-first` ਅਧੀਨ `+0.05` ਜੋੜਦੇ ਹਨ।
+- **ਪੈਕਾਂ ਵਿੱਚ `quality` ਅਤੇ `reliability` ਸ਼ਾਮਲ ਹਨ** (`quality 0.02`, `quality-first 0.03`; `reliability 0.03`, `reliability-first 0.04`) ਅਤੇ ਇਹ ਵੇਟ ਮੈਪ ਨੂੰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬਦਲਦੇ ਹਨ (`weights = pack`, ਮਰਜ ਨਹੀਂ)। `DEFAULT_WEIGHTS` ਵਿੱਚ `quality 0.06 / reliability 0.08` ਹੈ; `balanced`/`default` ਚੁਣਨ ਨਾਲ ਉਹ ਡਿਫਾਲਟ ਬਰਕਰਾਰ ਰਹਿੰਦੇ ਹਨ, ਜਦਕਿ ਕੋਈ ਪੈਕ ਚੁਣਨ ਨਾਲ ਉੱਪਰ ਦਿੱਤੇ ਉਸ ਪੈਕ ਦੇ ਮੁੱਲ ਵਰਤੇ ਜਾਂਦੇ ਹਨ। ਕੋਲਡ ਪੂਲ ਵਿੱਚ (ਹਾਲੇ ਕੋਈ ਨਿਰੀਖਣ ਨਹੀਂ, ਇਸ ਲਈ `quality 0.5` ਅਤੇ `reliability 1`) ਇਹ ਦੋ ਕਾਰਕ ਕਿਸੇ ਆਮ ਪੈਕ ਅਧੀਨ `+0.04` (`0.03 + 0.01`), `quality-first` ਅਧੀਨ `+0.045` ਅਤੇ `reliability-first` ਅਧੀਨ `+0.05` ਜੋੜਦੇ ਹਨ।
 - ਹਰ ਪੈਕ ਵਿੱਚ `tierAffinity`, `specificityMatch` ਅਤੇ `resetWindowAffinity` ਸਪਸ਼ਟ ਤੌਰ 'ਤੇ `0` ਹਨ।
 - ਇੱਕ ਝਲਕ ਵਿੱਚ ਹਰ ਪੈਕ ਦਾ ਮੁੱਖ ਜ਼ੋਰ:
   - **ship-fast** → latencyInv 0.3048 + health 0.2667 (ਘੱਟ ਲੇਟੈਂਸੀ ਵਾਲੇ, ਸਿਹਤਮੰਦ ਕਨੈਕਸ਼ਨ)
@@ -738,7 +738,7 @@ SLA-ਅਵੇਅਰ ਖੇਤਰ:
 ## ਟੀਅਰ Auto-Combo ਵਿੱਚ ਕਿਵੇਂ ਫਿੱਟ ਹੁੰਦੇ ਹਨ
 
 16-ਫੈਕਟਰ ਸਕੋਰਿੰਗ ਫੰਕਸ਼ਨ (`open-sse/services/autoCombo/scoring.ts`) ਟੀਅਰ
-ਮੈਂਬਰਸ਼ਿਪ ਨੂੰ ਦੋ ਸੰਕੇਤਾਂ ਵਜੋਂ ਵਰਤਦਾ ਹੈ: `tierPriority` (0.0476) ਅਤੇ `tierAffinity` (0.0476)। ਪੂਰੇ
+ਮੈਂਬਰਸ਼ਿਪ ਨੂੰ ਦੋ ਸੰਕੇਤਾਂ ਵਜੋਂ ਵਰਤਦਾ ਹੈ: `tierPriority` (0.0422) ਅਤੇ `tierAffinity` (0.0422)। ਪੂਰੇ
 `DEFAULT_WEIGHTS` ਸੈੱਟ ਲਈ ਉੱਪਰ ਦਿੱਤੀ ਮਿਆਰੀ [ਸਕੋਰਿੰਗ ਫੈਕਟਰ ਸਾਰਣੀ](#how-it-works-persisted-auto-combos) ਵੇਖੋ — ਹਰ ਪੈਕ ਲਈ ਓਵਰਰਾਈਡ (ship-fast/cost-saver/quality-first/
 offline-friendly) "ਹਰ ਪੈਕ ਲਈ ਵਜ਼ਨ ਪ੍ਰੋਫਾਈਲਾਂ" ਸਾਰਣੀ ਵਿੱਚ ਦਿੱਤੇ ਗਏ ਹਨ।
 

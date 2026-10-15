@@ -167,7 +167,7 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 ## এটি যেভাবে কাজ করে (স্থায়ী Auto-Comboসমূহ)
 
-Auto-Combo Engine প্রতিটি অনুরোধের জন্য সেরা provider/model গতিশীলভাবে নির্বাচন করে একটি **১৬-ফ্যাক্টর স্কোরিং ফাংশন** ব্যবহার করে (`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`-এ সংজ্ঞায়িত)। ডিফল্ট weight-গুলোর যোগফল `1.0`; কাস্টম weight-গুলো `normalizeScoringWeights()` দ্বারা পুনরায় স্বাভাবিকীকরণ করা হয়। ষোলোটির মধ্যে দুটি — `cacheAffinity` এবং `resetWindowAffinity` — এর ডিফল্ট weight হলো `0`; `reliability`-এর `DEFAULT_WEIGHTS`-এ weight `0`, কিন্তু সাধারণ pack-গুলোতে `0.03` এবং `reliability-first`-এ `0.04`, আর `quality`-এর pack-গুলোতে weight `0.02` (`quality-first`-এ `0.03`): তবুও প্রতিটি candidate-এর জন্য এগুলো গণনা করা হয়, এবং `cacheAffinity` স্কোরের বাইরে prompt-cache deduplication নিয়ন্ত্রণ করে, তাই শূন্য-ডিফল্ট ফ্যাক্টরগুলো ডিফল্টভাবে কোনো অবদান রাখে না, যদিও pack-গুলোতে রাখে।
+Auto-Combo Engine প্রতিটি অনুরোধের জন্য সেরা provider/model গতিশীলভাবে নির্বাচন করে একটি **১৬-ফ্যাক্টর স্কোরিং ফাংশন** ব্যবহার করে (`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`-এ সংজ্ঞায়িত)। ডিফল্ট weight-গুলোর যোগফল `1.0`; কাস্টম weight-গুলো `normalizeScoringWeights()` দ্বারা পুনরায় স্বাভাবিকীকরণ করা হয়। ষোলোটির মধ্যে দুটি — `cacheAffinity` এবং `resetWindowAffinity` — এর ডিফল্ট weight হলো `0`; `reliability`-এর `DEFAULT_WEIGHTS`-এ weight `0.08`, কিন্তু সাধারণ pack-গুলোতে `0.03` এবং `reliability-first`-এ `0.04`, আর `quality`-এর pack-গুলোতে weight `0.02` (`quality-first`-এ `0.03`): তবুও প্রতিটি candidate-এর জন্য এগুলো গণনা করা হয়, এবং `cacheAffinity` স্কোরের বাইরে prompt-cache deduplication নিয়ন্ত্রণ করে, তাই শূন্য-ডিফল্ট ফ্যাক্টরগুলো ডিফল্টভাবে কোনো অবদান রাখে না, যদিও pack-গুলোতে রাখে।
 
 ![Auto-Combo-এর ১৬-ফ্যাক্টর স্কোরিং](../diagrams/exported/auto-combo-scoring.svg)
 
@@ -175,24 +175,24 @@ Auto-Combo Engine প্রতিটি অনুরোধের জন্য �
 
 | ফ্যাক্টর              | ডিফল্ট Weight | বিবরণ                                                                                                                                                                                                                      |
 | :-------------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quota`               | 0.1429        | অবশিষ্ট quota / rate-limit headroom [0..1]                                                                                                                                                                                 |
-| `health`              | 0.1605        | circuit breaker থেকে প্রাপ্ত health score (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                                            |
-| `costInv`             | 0.1429        | বিপরীত **মিশ্রিত** খরচ (৬০% input + ৪০% output token-এর মূল্য, স্বাভাবিকীকৃত) — কম খরচ = বেশি স্কোর                                                                                                                        |
-| `latencyInv`          | 0.1143        | pool অনুযায়ী স্বাভাবিকীকৃত বিপরীত p95 latency — দ্রুততর = বেশি স্কোর                                                                                                                                                      |
-| `taskFit`             | 0.0762        | task-type উপযুক্ততা (coding, review, planning, analysis, debugging, docs)                                                                                                                                                  |
-| `stability`           | 0.0476        | latency standard deviation থেকে variance-ভিত্তিক স্থিতিশীলতা — যে candidate-এর response time বেশি ওঠানামা করে, তার স্কোর কম হয়                                                                                            |
-| `tierPriority`        | 0.0476        | account-tier অগ্রাধিকার — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                                                     |
-| `tierAffinity`        | 0.0476        | candidate-এর tier এবং manifest-এ সুপারিশকৃত tier-এর মধ্যকার affinity                                                                                                                                                       |
-| `specificityMatch`    | 0.0476        | অনুরোধের specificity (manifest hint) এবং model tier-এর মধ্যকার মিল                                                                                                                                                         |
-| `contextAffinity`     | 0.0476        | অনুরোধের context-window-এর প্রয়োজন এবং model-এর context window-এর মধ্যকার affinity                                                                                                                                        |
-| `sessionAvailability` | 0.0476        | এই session-এর জন্য candidate connection-এর OAuth session availability (`getOAuthSessionAvailability()`; non-OAuth connection-গুলো 1.0 স্কোর পায়)                                                                          |
-| `connectionDensity`   | 0.0476        | একই provider-এর connection-গুলোর মধ্যে load ছড়িয়ে দেয় (anti-concentration)                                                                                                                                              |
+| `quota`               | 0.1267        | অবশিষ্ট quota / rate-limit headroom [0..1]                                                                                                                                                                                 |
+| `health`              | 0.1423        | circuit breaker থেকে প্রাপ্ত health score (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                                            |
+| `costInv`             | 0.1267        | বিপরীত **মিশ্রিত** খরচ (৬০% input + ৪০% output token-এর মূল্য, স্বাভাবিকীকৃত) — কম খরচ = বেশি স্কোর                                                                                                                        |
+| `latencyInv`          | 0.1013        | pool অনুযায়ী স্বাভাবিকীকৃত বিপরীত p95 latency — দ্রুততর = বেশি স্কোর                                                                                                                                                      |
+| `taskFit`             | 0.0676        | task-type উপযুক্ততা (coding, review, planning, analysis, debugging, docs)                                                                                                                                                  |
+| `stability`           | 0.0422        | latency standard deviation থেকে variance-ভিত্তিক স্থিতিশীলতা — যে candidate-এর response time বেশি ওঠানামা করে, তার স্কোর কম হয়                                                                                            |
+| `tierPriority`        | 0.0422        | account-tier অগ্রাধিকার — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                                                     |
+| `tierAffinity`        | 0.0422        | candidate-এর tier এবং manifest-এ সুপারিশকৃত tier-এর মধ্যকার affinity                                                                                                                                                       |
+| `specificityMatch`    | 0.0422        | অনুরোধের specificity (manifest hint) এবং model tier-এর মধ্যকার মিল                                                                                                                                                         |
+| `contextAffinity`     | 0.0422        | অনুরোধের context-window-এর প্রয়োজন এবং model-এর context window-এর মধ্যকার affinity                                                                                                                                        |
+| `sessionAvailability` | 0.0422        | এই session-এর জন্য candidate connection-এর OAuth session availability (`getOAuthSessionAvailability()`; non-OAuth connection-গুলো 1.0 স্কোর পায়)                                                                          |
+| `connectionDensity`   | 0.0422        | একই provider-এর connection-গুলোর মধ্যে load ছড়িয়ে দেয় (anti-concentration)                                                                                                                                              |
 | `cacheAffinity`       | 0.00          | এই অনুরোধের prompt-cache prefix ইতিমধ্যে ধারণ করার সর্বোচ্চ সম্ভাবনাযুক্ত connection-এর প্রতি Rendezvous-hash affinity (`open-sse/services/combo/promptCacheAffinity.ts`); ডিফল্টভাবে নিষ্ক্রিয় (#8008)                   |
 | `resetWindowAffinity` | 0.00          | যেসব connection-এর quota reset window অনুকূল, সেগুলোর প্রতি পক্ষপাত (ডিফল্টভাবে নিষ্ক্রিয়)                                                                                                                                |
-| `quality`             | 0.03          | routing-event quality tracker থেকে প্রাপ্ত feedback-চালিত output-quality signal; observation-বিহীন candidate-গুলো নিরপেক্ষ 0.5 পায়                                                                                        |
-| `reliability`         | 0.00          | দশটি sample-এর ন্যূনতম সীমা সাপেক্ষে ২৪ ঘণ্টার usage history থেকে পর্যবেক্ষিত সফলতার অংশ, `1 - failureRate` (অন্যথায় real-time metrics); observation-বিহীন candidate-গুলোর মান 1.0 হিসেবে গণ্য হয়। ডিফল্টভাবে নিষ্ক্রিয় |
+| `quality`             | 0.06          | routing-event quality tracker থেকে প্রাপ্ত feedback-চালিত output-quality signal; observation-বিহীন candidate-গুলো নিরপেক্ষ 0.5 পায়                                                                                        |
+| `reliability`         | 0.08          | দশটি sample-এর ন্যূনতম সীমা সাপেক্ষে ২৪ ঘণ্টার usage history থেকে পর্যবেক্ষিত সফলতার অংশ, `1 - failureRate` (অন্যথায় real-time metrics); observation-বিহীন candidate-গুলোর মান 1.0 হিসেবে গণ্য হয়। ডিফল্টভাবে নিষ্ক্রিয় |
 
-**যোগফল:** `0.1429 + 0.1605 + 0.1429 + 0.1143 + 0.0762 + (7 × 0.0476) + 0.00 + 0.00 + 0.03 + 0.00 = 1.0`, যেমনটি `DEFAULT_WEIGHTS`-এ ঘোষিত হয়েছে; ব্যবহারকারী-কনফিগার করা weight-গুলো scoring-এর আগে `normalizeScoringWeights()` দ্বারা একটি distribution-এ পুনরায় স্বাভাবিকীকরণ করা হয়।
+**যোগফল:** `0.1267 + 0.1423 + 0.1267 + 0.1013 + 0.0676 + (7 × 0.0422) + 0.00 + 0.00 + 0.06 + 0.08 = 1.0`, যেমনটি `DEFAULT_WEIGHTS`-এ ঘোষিত হয়েছে; ব্যবহারকারী-কনফিগার করা weight-গুলো scoring-এর আগে `normalizeScoringWeights()` দ্বারা একটি distribution-এ পুনরায় স্বাভাবিকীকরণ করা হয়।
 
 ## মোড প্যাকসমূহ
 
@@ -218,7 +218,7 @@ Auto-Combo Engine প্রতিটি অনুরোধের জন্য �
 
 নোট:
 
-- **প্যাকগুলোতে `quality` এবং `reliability` অন্তর্ভুক্ত থাকে** (`quality 0.02`, `quality-first 0.03`; `reliability 0.03`, `reliability-first 0.04`) এবং এগুলো ওজন ম্যাপকে সম্পূর্ণভাবে প্রতিস্থাপন করে (`weights = pack`, মার্জ নয়)। `DEFAULT_WEIGHTS`-এ রয়েছে `quality 0.03 / reliability 0`; `balanced`/`default` নির্বাচন করলে ওই ডিফল্টগুলো বজায় থাকে, আর কোনো প্যাক নির্বাচন করলে উপরের প্যাক-নির্দিষ্ট মানগুলো ব্যবহৃত হয়। একটি কোল্ড পুলে (এখনও কোনো পর্যবেক্ষণ নেই, তাই `quality 0.5` এবং `reliability 1`) এই দুই ফ্যাক্টর একটি সাধারণ প্যাকের অধীনে `+0.04` (`0.03 + 0.01`), `quality-first`-এর অধীনে `+0.045` এবং `reliability-first`-এর অধীনে `+0.05` যোগ করে।
+- **প্যাকগুলোতে `quality` এবং `reliability` অন্তর্ভুক্ত থাকে** (`quality 0.02`, `quality-first 0.03`; `reliability 0.03`, `reliability-first 0.04`) এবং এগুলো ওজন ম্যাপকে সম্পূর্ণভাবে প্রতিস্থাপন করে (`weights = pack`, মার্জ নয়)। `DEFAULT_WEIGHTS`-এ রয়েছে `quality 0.06 / reliability 0.08`; `balanced`/`default` নির্বাচন করলে ওই ডিফল্টগুলো বজায় থাকে, আর কোনো প্যাক নির্বাচন করলে উপরের প্যাক-নির্দিষ্ট মানগুলো ব্যবহৃত হয়। একটি কোল্ড পুলে (এখনও কোনো পর্যবেক্ষণ নেই, তাই `quality 0.5` এবং `reliability 1`) এই দুই ফ্যাক্টর একটি সাধারণ প্যাকের অধীনে `+0.04` (`0.03 + 0.01`), `quality-first`-এর অধীনে `+0.045` এবং `reliability-first`-এর অধীনে `+0.05` যোগ করে।
 - প্রতিটি প্যাকে `tierAffinity`, `specificityMatch` এবং `resetWindowAffinity` স্পষ্টভাবে `0`।
 - এক নজরে প্রতিটি প্যাকের গুরুত্বারোপ:
   - **ship-fast** → latencyInv 0.3048 + health 0.2667 (কম লেটেন্সির, সুস্থ সংযোগ)
@@ -724,7 +724,7 @@ SLA-সচেতন ফিল্ডসমূহ:
 ## Auto-Combo-তে টিয়ার কীভাবে কাজ করে
 
 ১৬-ফ্যাক্টরের স্কোরিং ফাংশনটি (`open-sse/services/autoCombo/scoring.ts`) টিয়ারের
-সদস্যতাকে দুটি সংকেত হিসেবে বিবেচনা করে: `tierPriority` (0.0476) এবং `tierAffinity` (0.0476)। সম্পূর্ণ
+সদস্যতাকে দুটি সংকেত হিসেবে বিবেচনা করে: `tierPriority` (0.0422) এবং `tierAffinity` (0.0422)। সম্পূর্ণ
 `DEFAULT_WEIGHTS` সেটের জন্য উপরের প্রামাণ্য [স্কোরিং ফ্যাক্টর টেবিলটি](#how-it-works-persisted-auto-combos) দেখুন
 — প্রতিটি প্যাকের ওভাররাইড (ship-fast/cost-saver/quality-first/
 offline-friendly) "প্রতি প্যাকের ওয়েট প্রোফাইল" টেবিলে তালিকাভুক্ত রয়েছে।

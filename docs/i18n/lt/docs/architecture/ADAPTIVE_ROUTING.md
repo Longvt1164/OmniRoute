@@ -189,7 +189,7 @@ Tai perduodama automatinių derinių balų skaičiavimo komponentui kaip `qualit
 
 - `ScoringFactors.quality` / `ScoringWeights.quality`, esantys
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Suma išlieka 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Suma išlieka 1.0.
 - `buildAutoCandidates` užpildo `candidate.quality` reikšme iš sekimo komponento; kandidatai,
   apie kuriuos nėra duomenų, gauna numatytąją neutralią reikšmę **0.5** (naujas kandidatas nėra nei
   sustiprinamas, nei baudžiamas).

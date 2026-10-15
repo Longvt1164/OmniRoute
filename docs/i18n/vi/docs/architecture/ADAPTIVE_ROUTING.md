@@ -194,7 +194,7 @@ Thông tin này được đưa vào bộ tính điểm auto-combo dưới dạng
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` trong
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Tổng vẫn là 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Tổng vẫn là 1.0.
 - `buildAutoCandidates` điền `candidate.quality` từ tracker; các ứng viên
   không có dữ liệu mặc định nhận giá trị trung lập **0.5** (một ứng viên chưa có dữ liệu
   không được tăng điểm cũng không bị phạt).

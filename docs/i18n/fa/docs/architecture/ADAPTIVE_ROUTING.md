@@ -191,7 +191,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }` را ارائ�
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` در
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: مقدار `health` از 0.1905 به 0.1605 و `quality` برابر 0.03
+- `DEFAULT_WEIGHTS`: مقدار `health` از 0.1905 به 0.1423 و `quality` برابر 0.06 و `reliability` 0.08
   است. مجموع همچنان 1.0 باقی میماند.
 - `buildAutoCandidates` مقدار `candidate.quality` را از tracker پر میکند؛
   candidateهای بدون داده بهطور پیشفرض مقدار خنثی **0.5** را میگیرند

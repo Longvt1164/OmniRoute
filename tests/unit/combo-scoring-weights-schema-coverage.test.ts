@@ -89,16 +89,17 @@ test("the dashboard defaults are a distribution", () => {
   );
 });
 
-// This is the one behaviour change in the fix, pinned rather than described.
-// A config stored while the schema still stripped the two keys came back with
-// them absent; `normalizeScoringWeights` read that as a deliberate zero and
-// renormalized the remaining thirteen upward. Now the schema supplies the
-// engine's own defaults, so the distribution is the intended one. Anyone who
-// wants the old numbers back has to change this test on purpose.
-test("a config saved without the two keys now scores with the engine's distribution", () => {
+// Behaviour change, pinned rather than described. A config stored while the
+// schema stripped these keys came back with them absent;
+// `normalizeScoringWeights` read that as a deliberate zero and renormalized the
+// remaining thirteen upward. Now the schema supplies the engine's own defaults,
+// so the distribution is the intended one. Anyone who wants the old numbers back
+// has to change this test on purpose.
+test("a config saved without the schema-defaulted keys now scores with the engine's distribution", () => {
   const savedUnderTheOldSchema: Record<string, number> = { ...DEFAULT_WEIGHTS };
   delete savedUnderTheOldSchema.connectionDensity;
   delete savedUnderTheOldSchema.quality;
+  delete savedUnderTheOldSchema.reliability;
 
   const before = normalizeScoringWeights(savedUnderTheOldSchema as never);
   const after = normalizeScoringWeights(parseWeights(savedUnderTheOldSchema) as never);
@@ -108,7 +109,28 @@ test("a config saved without the two keys now scores with the engine's distribut
     0.1549,
     "before the fix the thirteen surviving weights were renormalized upward"
   );
-  assert.equal(Number((after.quota ?? 0).toFixed(4)), 0.1429, "now they are the engine's values");
+  assert.equal(Number((after.quota ?? 0).toFixed(4)), 0.1267, "now they are the engine's values");
   assert.equal(before.connectionDensity ?? 0, 0, "anti-concentration used to be silently off");
   assert.ok((after.connectionDensity ?? 0) > 0, "and now it votes, which is the point");
+  assert.ok((after.reliability ?? 0) > 0, "reliability now votes too");
+});
+
+// Drift guard: the schema's OWN defaults (not just a round-trip of
+// DEFAULT_WEIGHTS, which would pass even if the defaults were stale) must equal
+// the engine's weights. Parse only the six required keys so EVERY optional key
+// resolves through its zod default, then compare the whole object. Retuning
+// DEFAULT_WEIGHTS without the zod defaults fails here.
+test("the schema defaults for every optional factor are the engine's defaults", () => {
+  const requiredKeys = ["quota", "health", "costInv", "latencyInv", "taskFit", "stability"];
+  const required: Record<string, number> = {};
+  for (const key of requiredKeys) {
+    required[key] = (DEFAULT_WEIGHTS as Record<string, number>)[key];
+  }
+  const parsed = parseWeights(required);
+  assert.deepEqual(
+    parsed,
+    DEFAULT_WEIGHTS,
+    "the schema's own defaults drifted from DEFAULT_WEIGHTS — retuning DEFAULT_WEIGHTS means " +
+      "updating the zod defaults in src/shared/validation/schemas/combo.ts to match"
+  );
 });

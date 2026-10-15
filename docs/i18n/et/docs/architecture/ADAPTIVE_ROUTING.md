@@ -190,7 +190,7 @@ See edastatakse automaatse kombineerimise skoorijale skoorimistegurina `quality`
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` failis
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Summa jääb väärtusele 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Summa jääb väärtusele 1.0.
 - `buildAutoCandidates` täidab välja `candidate.quality` jälgija andmetega;
   andmeteta kandidaatide vaikeväärtus on neutraalne **0.5** (külma kandidaati
   ei eelistata ega karistata).

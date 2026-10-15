@@ -187,7 +187,7 @@ Hii hulisha kikokotoaji cha alama cha auto-combo kama kipengele cha ukokotoaji w
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` katika
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Jumla hubaki 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Jumla hubaki 1.0.
 - `buildAutoCandidates` hujaza `candidate.quality` kutoka kwenye kifuatiliaji; candidates
   zisizo na data hupewa thamani chaguomsingi isiyoegemea upande wowote ya **0.5** (candidate asiye na historia
   haongezewi wala kupunguziwa upendeleo).

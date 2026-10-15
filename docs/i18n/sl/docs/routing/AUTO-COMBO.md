@@ -188,7 +188,7 @@ Za prvotno zmedo, ki jo ta dokumentacija pojasnjuje, glejte [#7992](https://gith
 
 ## Kako deluje (trajno shranjene samodejne kombinacije)
 
-Mehanizem samodejnih kombinacij za vsako zahtevo dinamično izbere najboljšega ponudnika/model z uporabo **16-faktorske funkcije točkovanja** (opredeljene v `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). Vsota privzetih uteži je `1.0`; uteži po meri se ponovno normalizirajo s funkcijo `normalizeScoringWeights()`. Dva od šestnajstih dejavnikov — `cacheAffinity` in `resetWindowAffinity` — imata privzeto utež `0`; `reliability` ima v `DEFAULT_WEIGHTS` vrednost `0`, vendar `0.03` v splošnih paketih in `0.04` v paketu `reliability-first`, `quality` pa ima v paketih vrednost `0.02` (`0.03` v paketu `quality-first`): kljub temu se izračunajo za vsakega kandidata, `cacheAffinity` pa zunaj ocene nadzoruje odpravljanje podvojenih podatkov v predpomnilniku pozivov, zato dejavniki z ničelno privzeto utežjo privzeto preprosto ne glasujejo, paketi pa jih upoštevajo.
+Mehanizem samodejnih kombinacij za vsako zahtevo dinamično izbere najboljšega ponudnika/model z uporabo **16-faktorske funkcije točkovanja** (opredeljene v `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). Vsota privzetih uteži je `1.0`; uteži po meri se ponovno normalizirajo s funkcijo `normalizeScoringWeights()`. Dva od šestnajstih dejavnikov — `cacheAffinity` in `resetWindowAffinity` — imata privzeto utež `0`; `reliability` ima v `DEFAULT_WEIGHTS` vrednost `0.08`, vendar `0.03` v splošnih paketih in `0.04` v paketu `reliability-first`, `quality` pa ima v paketih vrednost `0.02` (`0.03` v paketu `quality-first`): kljub temu se izračunajo za vsakega kandidata, `cacheAffinity` pa zunaj ocene nadzoruje odpravljanje podvojenih podatkov v predpomnilniku pozivov, zato dejavniki z ničelno privzeto utežjo privzeto preprosto ne glasujejo, paketi pa jih upoštevajo.
 
 ![16-faktorsko točkovanje samodejnih kombinacij](../diagrams/exported/auto-combo-scoring.svg)
 
@@ -196,24 +196,24 @@ Mehanizem samodejnih kombinacij za vsako zahtevo dinamično izbere najboljšega 
 
 | Dejavnik              | Privzeta utež | Opis                                                                                                                                                                                                  |
 | :-------------------- | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quota`               | 0.1429        | Preostala kvota / razpoložljiva zmogljivost omejitve hitrosti [0..1]                                                                                                                                  |
-| `health`              | 0.1605        | Ocena stanja iz odklopnika (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                                      |
-| `costInv`             | 0.1429        | Obratna **kombinirana** cena (60 % cena vhodnih + 40 % cena izhodnih žetonov, normalizirano) — nižja cena = višja ocena                                                                               |
-| `latencyInv`          | 0.1143        | Obratna zakasnitev p95, normalizirana glede na nabor — hitreje = višja ocena                                                                                                                          |
-| `taskFit`             | 0.0762        | Primernost za vrsto naloge (programiranje, pregled, načrtovanje, analiza, razhroščevanje, dokumentacija)                                                                                              |
-| `stability`           | 0.0476        | Stabilnost na podlagi variance standardnega odklona zakasnitve — kandidat z bolj nihajočim odzivnim časom prejme nižjo oceno                                                                          |
-| `tierPriority`        | 0.0476        | Prednost ravni računa — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                                  |
-| `tierAffinity`        | 0.0476        | Ujemanje med ravnjo kandidata in ravnjo, priporočeno v manifestu                                                                                                                                      |
-| `specificityMatch`    | 0.0476        | Ujemanje med specifičnostjo zahteve (namig manifesta) in ravnjo modela                                                                                                                                |
-| `contextAffinity`     | 0.0476        | Ujemanje med zahtevano velikostjo kontekstnega okna zahteve in kontekstnim oknom modela                                                                                                               |
-| `sessionAvailability` | 0.0476        | Razpoložljivost seje OAuth za kandidatno povezavo v tej seji (`getOAuthSessionAvailability()`; povezave brez OAuth prejmejo oceno 1.0)                                                                |
-| `connectionDensity`   | 0.0476        | Porazdeli obremenitev med povezave istega ponudnika (preprečevanje koncentracije)                                                                                                                     |
+| `quota`               | 0.1267        | Preostala kvota / razpoložljiva zmogljivost omejitve hitrosti [0..1]                                                                                                                                  |
+| `health`              | 0.1423        | Ocena stanja iz odklopnika (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                                      |
+| `costInv`             | 0.1267        | Obratna **kombinirana** cena (60 % cena vhodnih + 40 % cena izhodnih žetonov, normalizirano) — nižja cena = višja ocena                                                                               |
+| `latencyInv`          | 0.1013        | Obratna zakasnitev p95, normalizirana glede na nabor — hitreje = višja ocena                                                                                                                          |
+| `taskFit`             | 0.0676        | Primernost za vrsto naloge (programiranje, pregled, načrtovanje, analiza, razhroščevanje, dokumentacija)                                                                                              |
+| `stability`           | 0.0422        | Stabilnost na podlagi variance standardnega odklona zakasnitve — kandidat z bolj nihajočim odzivnim časom prejme nižjo oceno                                                                          |
+| `tierPriority`        | 0.0422        | Prednost ravni računa — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                                  |
+| `tierAffinity`        | 0.0422        | Ujemanje med ravnjo kandidata in ravnjo, priporočeno v manifestu                                                                                                                                      |
+| `specificityMatch`    | 0.0422        | Ujemanje med specifičnostjo zahteve (namig manifesta) in ravnjo modela                                                                                                                                |
+| `contextAffinity`     | 0.0422        | Ujemanje med zahtevano velikostjo kontekstnega okna zahteve in kontekstnim oknom modela                                                                                                               |
+| `sessionAvailability` | 0.0422        | Razpoložljivost seje OAuth za kandidatno povezavo v tej seji (`getOAuthSessionAvailability()`; povezave brez OAuth prejmejo oceno 1.0)                                                                |
+| `connectionDensity`   | 0.0422        | Porazdeli obremenitev med povezave istega ponudnika (preprečevanje koncentracije)                                                                                                                     |
 | `cacheAffinity`       | 0.00          | Afiniteta zgoščevanja rendezvous do povezave, ki najverjetneje že vsebuje predpono predpomnilnika pozivov te zahteve (`open-sse/services/combo/promptCacheAffinity.ts`); privzeto onemogočeno (#8008) |
 | `resetWindowAffinity` | 0.00          | Prednost povezavam z ugodnim časovnim oknom ponastavitve kvote (privzeto onemogočeno)                                                                                                                 |
-| `quality`             | 0.03          | Signal kakovosti izhoda, ki temelji na povratnih informacijah sledilnika kakovosti dogodkov usmerjanja; kandidati brez opazovanj prejmejo nevtralno vrednost 0.5                                      |
-| `reliability`         | 0.00          | Opaženi delež uspešnosti, `1 - failureRate`, iz 24-urne zgodovine uporabe z najmanj desetimi vzorci (sicer sprotne metrike); kandidati brez opazovanj imajo vrednost 1.0. Privzeto onemogočeno        |
+| `quality`             | 0.06          | Signal kakovosti izhoda, ki temelji na povratnih informacijah sledilnika kakovosti dogodkov usmerjanja; kandidati brez opazovanj prejmejo nevtralno vrednost 0.5                                      |
+| `reliability`         | 0.08          | Opaženi delež uspešnosti, `1 - failureRate`, iz 24-urne zgodovine uporabe z najmanj desetimi vzorci (sicer sprotne metrike); kandidati brez opazovanj imajo vrednost 1.0. Privzeto onemogočeno        |
 
-**Vsota:** `0.1429 + 0.1605 + 0.1429 + 0.1143 + 0.0762 + (7 × 0.0476) + 0.00 + 0.00 + 0.03 + 0.00 = 1.0`, kot je navedeno v `DEFAULT_WEIGHTS`; uporabniško nastavljene uteži se pred točkovanjem s funkcijo `normalizeScoringWeights()` ponovno normalizirajo v porazdelitev.
+**Vsota:** `0.1267 + 0.1423 + 0.1267 + 0.1013 + 0.0676 + (7 × 0.0422) + 0.00 + 0.00 + 0.06 + 0.08 = 1.0`, kot je navedeno v `DEFAULT_WEIGHTS`; uporabniško nastavljene uteži se pred točkovanjem s funkcijo `normalizeScoringWeights()` ponovno normalizirajo v porazdelitev.
 
 ## Paketi načinov
 
@@ -239,7 +239,7 @@ Mehanizem samodejnih kombinacij za vsako zahtevo dinamično izbere najboljšega 
 
 Opombe:
 
-- **Paketi vključujejo `quality` in `reliability`** (`quality 0.02`, pri `quality-first` pa `0.03`; `reliability 0.03`, pri `reliability-first` pa `0.04`) ter v celoti nadomestijo preslikavo uteži (`weights = pack`, ne združitev). `DEFAULT_WEIGHTS` vsebuje `quality 0.03 / reliability 0`; izbira `balanced`/`default` ohrani te privzete vrednosti, izbira paketa pa uporabi zgoraj navedene vrednosti paketa. V hladnem naboru (še brez opazovanj, zato `quality 0.5` in `reliability 1`) ta dejavnika dodata `+0.04` pri splošnem paketu (`0.03 + 0.01`), `+0.045` pri `quality-first` in `+0.05` pri `reliability-first`.
+- **Paketi vključujejo `quality` in `reliability`** (`quality 0.02`, pri `quality-first` pa `0.03`; `reliability 0.03`, pri `reliability-first` pa `0.04`) ter v celoti nadomestijo preslikavo uteži (`weights = pack`, ne združitev). `DEFAULT_WEIGHTS` vsebuje `quality 0.06 / reliability 0.08`; izbira `balanced`/`default` ohrani te privzete vrednosti, izbira paketa pa uporabi zgoraj navedene vrednosti paketa. V hladnem naboru (še brez opazovanj, zato `quality 0.5` in `reliability 1`) ta dejavnika dodata `+0.04` pri splošnem paketu (`0.03 + 0.01`), `+0.045` pri `quality-first` in `+0.05` pri `reliability-first`.
 - `tierAffinity`, `specificityMatch` in `resetWindowAffinity` so v vsakem paketu izrecno nastavljeni na `0`.
 - Kratek pregled poudarkov posameznih paketov:
   - **ship-fast** → latencyInv 0.3048 + health 0.2667 (zdrave povezave z nizko zakasnitvijo)
@@ -767,7 +767,7 @@ Več kot 30 modelov je ocenjenih v 6 vrstah nalog (`coding`, `review`, `planning
 ## Kako se ravni vključujejo v Auto-Combo
 
 Funkcija ocenjevanja s 16 dejavniki (`open-sse/services/autoCombo/scoring.ts`) obravnava
-pripadnost ravni kot dva signala: `tierPriority` (0.0476) in `tierAffinity` (0.0476). Za celoten
+pripadnost ravni kot dva signala: `tierPriority` (0.0422) in `tierAffinity` (0.0422). Za celoten
 nabor `DEFAULT_WEIGHTS` glejte zgornjo kanonično [tabelo dejavnikov ocenjevanja](#how-it-works-persisted-auto-combos) —
 preglasitve za posamezne pakete (ship-fast/cost-saver/quality-first/
 offline-friendly) so navedene v tabeli »Profili uteži po paketih«.

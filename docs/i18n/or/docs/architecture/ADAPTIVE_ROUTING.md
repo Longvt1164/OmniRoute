@@ -186,7 +186,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`କୁ ପ୍�
 
 - `open-sse/services/autoCombo/scoring.ts`ରେ
   `ScoringFactors.quality` / `ScoringWeights.quality`।
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03। ମୋଟ ଯୋଗଫଳ 1.0 ରହେ।
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08। ମୋଟ ଯୋଗଫଳ 1.0 ରହେ।
 - `buildAutoCandidates` ଟ୍ରାକର୍ରୁ `candidate.quality` ପୂରଣ କରେ; ଡାଟା ନଥିବା ପ୍ରାର୍ଥୀମାନେ
   ଡିଫଲ୍ଟ ଭାବେ ନିରପେକ୍ଷ **0.5** ପାଆନ୍ତି (ଏକ କୋଲ୍ଡ୍ ପ୍ରାର୍ଥୀକୁ ବୁଷ୍ଟ୍ କିମ୍ବା
   ଦଣ୍ଡିତ କରାଯାଏ ନାହିଁ)।

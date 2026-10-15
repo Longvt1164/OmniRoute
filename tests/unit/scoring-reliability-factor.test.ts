@@ -26,22 +26,42 @@ function candidate(overrides: Partial<ProviderCandidate> = {}): ProviderCandidat
 
 const factorsOf = (c: ProviderCandidate) => calculateFactors(c, [c], "default", () => 0.5);
 
-test("the default ranking is untouched — the new factor does not vote", () => {
+test("the default weight makes the factor vote — a failing provider drops", () => {
+  // Behaviour change: `reliability` used to default to 0, so this factor never
+  // moved the ranking. It now carries the engine's default weight, so a
+  // provider that fails nearly every call must rank below a solid one at the
+  // engine's own weights.
   const pool = [
     candidate({ provider: "solid", model: "solid/m", errorRate: 0.01 }),
     candidate({ provider: "broken", model: "broken/m", errorRate: 0.99 }),
   ];
-  const scores = scorePool(pool, "default").map((r) => r.score);
-  assert.equal(scores[0], scores[1], "weight 0 must leave the ranking exactly as it was");
+  const ranked = scorePool(pool, "default");
+  assert.equal(ranked[0].provider, "solid", "the reliability weight must separate them");
+});
+
+test("reliability is failure-rate only — the breaker signal is not double-counted", () => {
+  // The `health` factor already encodes the circuit-breaker state
+  // (CLOSED=1.0, DEGRADED=0.7, HALF_OPEN=0.5, OPEN=0.0). Folding the state in
+  // here as well penalised the same failure twice and diverged from
+  // speedRanking.ts, which keeps `reliability = 1 - failureRate` apart from
+  // `health = healthScoreFor(state)`.
+  for (const circuitBreakerState of ["CLOSED", "DEGRADED", "HALF_OPEN", "OPEN"] as const) {
+    assert.equal(
+      factorsOf(candidate({ errorRate: 0.5, circuitBreakerState })).reliability,
+      0.5,
+      `${circuitBreakerState} must not move the failure-rate factor`
+    );
+  }
 });
 
 test("given a weight, a provider that fails nearly every call drops", () => {
-  // Take the 0.2 from `health` rather than adding it: otherwise this would be
-  // testing renormalisation, not the factor.
+  // Move weight from `health` to `reliability` without changing the total, so
+  // this tests the factor rather than renormalisation. Both candidates are
+  // CLOSED, so the health factor cancels either way.
   const weights = {
     ...DEFAULT_WEIGHTS,
-    reliability: 0.2,
-    health: DEFAULT_WEIGHTS.health - 0.2,
+    reliability: 0.1,
+    health: DEFAULT_WEIGHTS.health - 0.02,
   };
   const ranked = scorePool(
     [
@@ -59,7 +79,7 @@ test("failureRate wins over errorRate, as it does in speed ranking", () => {
   assert.equal(factors.reliability, 0.9);
 });
 
-test("no observation reads as fully reliable, and the zero weight makes that harmless", () => {
+test("no observation reads as fully reliable", () => {
   const factors = factorsOf(candidate({ errorRate: undefined as unknown as number }));
   assert.equal(factors.reliability, 1);
 });
@@ -98,7 +118,9 @@ test("the default weights still sum to one", () => {
   assert.equal(validateWeights(DEFAULT_WEIGHTS), true);
 });
 
-test("reliability is a declared weight, so an operator can give it one", () => {
+test("reliability is a declared, enabled weight", () => {
   assert.ok("reliability" in DEFAULT_WEIGHTS, "the factor must be declared to be settable");
-  assert.equal(DEFAULT_WEIGHTS.reliability, 0, "it ships silent");
+  // Enabled on purpose (was 0): combined with the separate `health` factor this
+  // is what drops a provider that fails most of its calls below a healthy one.
+  assert.equal(DEFAULT_WEIGHTS.reliability, 0.08, "ships enabled");
 });

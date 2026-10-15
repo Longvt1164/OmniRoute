@@ -186,7 +186,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }` hàn.
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` nínú
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Àpapọ̀ ṣì jẹ́ 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Àpapọ̀ ṣì jẹ́ 1.0.
 - `buildAutoCandidates` ń fi iye láti inú tracker sínú `candidate.quality`; àwọn
   candidates tí kò ní data máa ń lo **0.5** tí kò ṣe ojúṣàájú gẹ́gẹ́ bí àkọ́kọ́
   (candidate tuntun tí kò ní data kò gba àfikún, bẹ́ẹ̀ ni a kò jẹ ẹ́ níyà).

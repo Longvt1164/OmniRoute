@@ -191,7 +191,7 @@ Isso alimenta o mecanismo de pontuação auto-combo como o fator de pontuação
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` em
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. A soma permanece 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. A soma permanece 1.0.
 - `buildAutoCandidates` preenche `candidate.quality` com dados do rastreador;
   candidatos sem dados usam por padrão o valor neutro **0.5** (um candidato sem
   histórico não recebe bônus nem penalidade).

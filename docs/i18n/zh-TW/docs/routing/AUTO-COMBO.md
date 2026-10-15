@@ -155,7 +155,7 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 ## 運作方式（持久化自動組合）
 
-自動組合引擎使用**含 16 項因素的評分函式**（定義於 `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`），為每個請求動態選擇最佳的提供者／模型。預設權重總和為 `1.0`；自訂權重會由 `normalizeScoringWeights()` 重新正規化。這十六項因素中有兩項——`cacheAffinity` 與 `resetWindowAffinity`——的預設權重為 `0`；`reliability` 在 `DEFAULT_WEIGHTS` 中的權重為 `0`，但在一般套件中為 `0.03`，在 `reliability-first` 中則為 `0.04`；而 `quality` 在套件中的權重為 `0.02`（在 `quality-first` 中為 `0.03`）：系統仍會為每個候選項目計算這些因素，且 `cacheAffinity` 會在評分之外控制提示快取去重，因此，預設為零的因素在預設情況下不會參與評分，但套件會使用它們。
+自動組合引擎使用**含 16 項因素的評分函式**（定義於 `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`），為每個請求動態選擇最佳的提供者／模型。預設權重總和為 `1.0`；自訂權重會由 `normalizeScoringWeights()` 重新正規化。這十六項因素中有兩項——`cacheAffinity` 與 `resetWindowAffinity`——的預設權重為 `0`；`reliability` 在 `DEFAULT_WEIGHTS` 中的權重為 `0.08`，但在一般套件中為 `0.03`，在 `reliability-first` 中則為 `0.04`；而 `quality` 在套件中的權重為 `0.02`（在 `quality-first` 中為 `0.03`）：系統仍會為每個候選項目計算這些因素，且 `cacheAffinity` 會在評分之外控制提示快取去重，因此，預設為零的因素在預設情況下不會參與評分，但套件會使用它們。
 
 ![自動組合的 16 因素評分](../diagrams/exported/auto-combo-scoring.svg)
 
@@ -163,24 +163,24 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 | 因素                  | 預設權重 | 說明                                                                                                                                                 |
 | :-------------------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quota`               | 0.1429   | 剩餘配額／速率限制餘裕 [0..1]                                                                                                                        |
-| `health`              | 0.1605   | 來自斷路器的健康分數（CLOSED=1.0、HALF_OPEN=0.5、OPEN=0.0）                                                                                          |
-| `costInv`             | 0.1429   | **混合**成本的倒數（60% 輸入 + 40% 輸出 token 價格，經正規化）——越便宜，分數越高                                                                     |
-| `latencyInv`          | 0.1143   | 相對於候選池正規化後的 p95 延遲倒數——越快，分數越高                                                                                                  |
-| `taskFit`             | 0.0762   | 任務類型適配度（編碼、審查、規劃、分析、除錯、文件）                                                                                                 |
-| `stability`           | 0.0476   | 根據延遲標準差計算、以變異程度為基礎的穩定性——回應時間波動較大的候選項目分數較低                                                                     |
-| `tierPriority`        | 0.0476   | 帳戶層級優先順序——Ultra=1.0、Pro=0.67、Standard=0.33、Free=0.0                                                                                       |
-| `tierAffinity`        | 0.0476   | 候選項目層級與資訊清單建議層級之間的親和度                                                                                                           |
-| `specificityMatch`    | 0.0476   | 請求明確程度（資訊清單提示）與模型層級之間的匹配度                                                                                                   |
-| `contextAffinity`     | 0.0476   | 請求所需的上下文視窗與模型上下文視窗之間的親和度                                                                                                     |
-| `sessionAvailability` | 0.0476   | 此工作階段中候選連線的 OAuth 工作階段可用性（`getOAuthSessionAvailability()`；非 OAuth 連線的分數為 1.0）                                            |
-| `connectionDensity`   | 0.0476   | 將負載分散至同一提供者的不同連線（避免集中）                                                                                                         |
+| `quota`               | 0.1267   | 剩餘配額／速率限制餘裕 [0..1]                                                                                                                        |
+| `health`              | 0.1423   | 來自斷路器的健康分數（CLOSED=1.0、HALF_OPEN=0.5、OPEN=0.0）                                                                                          |
+| `costInv`             | 0.1267   | **混合**成本的倒數（60% 輸入 + 40% 輸出 token 價格，經正規化）——越便宜，分數越高                                                                     |
+| `latencyInv`          | 0.1013   | 相對於候選池正規化後的 p95 延遲倒數——越快，分數越高                                                                                                  |
+| `taskFit`             | 0.0676   | 任務類型適配度（編碼、審查、規劃、分析、除錯、文件）                                                                                                 |
+| `stability`           | 0.0422   | 根據延遲標準差計算、以變異程度為基礎的穩定性——回應時間波動較大的候選項目分數較低                                                                     |
+| `tierPriority`        | 0.0422   | 帳戶層級優先順序——Ultra=1.0、Pro=0.67、Standard=0.33、Free=0.0                                                                                       |
+| `tierAffinity`        | 0.0422   | 候選項目層級與資訊清單建議層級之間的親和度                                                                                                           |
+| `specificityMatch`    | 0.0422   | 請求明確程度（資訊清單提示）與模型層級之間的匹配度                                                                                                   |
+| `contextAffinity`     | 0.0422   | 請求所需的上下文視窗與模型上下文視窗之間的親和度                                                                                                     |
+| `sessionAvailability` | 0.0422   | 此工作階段中候選連線的 OAuth 工作階段可用性（`getOAuthSessionAvailability()`；非 OAuth 連線的分數為 1.0）                                            |
+| `connectionDensity`   | 0.0422   | 將負載分散至同一提供者的不同連線（避免集中）                                                                                                         |
 | `cacheAffinity`       | 0.00     | 透過 Rendezvous 雜湊，優先選擇最有可能已持有此請求提示快取前綴的連線（`open-sse/services/combo/promptCacheAffinity.ts`）；預設停用（#8008）          |
 | `resetWindowAffinity` | 0.00     | 偏向配額重設時間窗較有利的連線（預設停用）                                                                                                           |
-| `quality`             | 0.03     | 由路由事件品質追蹤器根據回饋產生的輸出品質訊號；沒有觀測資料的候選項目會獲得中性分數 0.5                                                             |
-| `reliability`         | 0.00     | 根據過去 24 小時使用記錄，在至少十個樣本的門檻下計算觀測到的成功比例 `1 - failureRate`（否則使用即時指標）；沒有觀測資料的候選項目視為 1.0。預設停用 |
+| `quality`             | 0.06     | 由路由事件品質追蹤器根據回饋產生的輸出品質訊號；沒有觀測資料的候選項目會獲得中性分數 0.5                                                             |
+| `reliability`         | 0.08     | 根據過去 24 小時使用記錄，在至少十個樣本的門檻下計算觀測到的成功比例 `1 - failureRate`（否則使用即時指標）；沒有觀測資料的候選項目視為 1.0。預設停用 |
 
-**總和：**`0.1429 + 0.1605 + 0.1429 + 0.1143 + 0.0762 + (7 × 0.0476) + 0.00 + 0.00 + 0.03 + 0.00 = 1.0`，如 `DEFAULT_WEIGHTS` 中所宣告；使用者設定的權重會在評分前由 `normalizeScoringWeights()` 重新正規化為一個分布。
+**總和：**`0.1267 + 0.1423 + 0.1267 + 0.1013 + 0.0676 + (7 × 0.0422) + 0.00 + 0.00 + 0.06 + 0.08 = 1.0`，如 `DEFAULT_WEIGHTS` 中所宣告；使用者設定的權重會在評分前由 `normalizeScoringWeights()` 重新正規化為一個分布。
 
 ## 模式套件
 
@@ -206,7 +206,7 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 注意事項：
 
-- **套件包含 `quality` 和 `reliability`**（`quality 0.02`，`quality-first 0.03`；`reliability 0.03`，`reliability-first 0.04`），並且會完整取代權重映射（`weights = pack`，而非合併）。`DEFAULT_WEIGHTS` 包含 `quality 0.03 / reliability 0`；選擇 `balanced`/`default` 會保留這些預設值，選擇套件則會使用上方列出的套件值。在冷啟動資源池中（尚無觀測資料，因此 `quality 0.5` 且 `reliability 1`），這兩個因素在一般套件下會增加 `+0.04`（`0.03 + 0.01`），在 `quality-first` 下增加 `+0.045`，在 `reliability-first` 下增加 `+0.05`。
+- **套件包含 `quality` 和 `reliability`**（`quality 0.02`，`quality-first 0.03`；`reliability 0.03`，`reliability-first 0.04`），並且會完整取代權重映射（`weights = pack`，而非合併）。`DEFAULT_WEIGHTS` 包含 `quality 0.06 / reliability 0.08`；選擇 `balanced`/`default` 會保留這些預設值，選擇套件則會使用上方列出的套件值。在冷啟動資源池中（尚無觀測資料，因此 `quality 0.5` 且 `reliability 1`），這兩個因素在一般套件下會增加 `+0.04`（`0.03 + 0.01`），在 `quality-first` 下增加 `+0.045`，在 `reliability-first` 下增加 `+0.05`。
 - 每個套件中的 `tierAffinity`、`specificityMatch` 和 `resetWindowAffinity` 都明確設為 `0`。
 - 各套件的重點一覽：
   - **ship-fast** → latencyInv 0.3048 + health 0.2667（低延遲、健康的連線）
@@ -691,7 +691,7 @@ SLA 感知欄位：
 
 ## 層級如何融入 Auto-Combo
 
-這個 16 因子評分函式（`open-sse/services/autoCombo/scoring.ts`）將層級歸屬視為兩個訊號：`tierPriority`（0.0476）與 `tierAffinity`（0.0476）。如需完整的 `DEFAULT_WEIGHTS` 設定，請參閱上方的標準[評分因子表](#how-it-works-persisted-auto-combos)；各套件的覆寫設定（ship-fast/cost-saver/quality-first/offline-friendly）則列於「各套件的權重設定檔」表格中。
+這個 16 因子評分函式（`open-sse/services/autoCombo/scoring.ts`）將層級歸屬視為兩個訊號：`tierPriority`（0.0422）與 `tierAffinity`（0.0422）。如需完整的 `DEFAULT_WEIGHTS` 設定，請參閱上方的標準[評分因子表](#how-it-works-persisted-auto-combos)；各套件的覆寫設定（ship-fast/cost-saver/quality-first/offline-friendly）則列於「各套件的權重設定檔」表格中。
 
 僅憑層級**不會**強制優先選擇第 1 層級——如果第 1 層級的延遲表現不佳，或成本與品質的取捨並非最佳，第 2 層級就會勝出。若要強制遵循層級順序，請使用組合策略 `priority`，並依層級排列提供者。
 

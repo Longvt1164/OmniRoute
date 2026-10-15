@@ -184,7 +184,7 @@ See [#7992](https://github.com/diegosouzapw/OmniRoute/issues/7992) and [#7111](h
 
 ## How It Works (Persisted Auto-Combos)
 
-The Auto-Combo Engine dynamically selects the best provider/model for each request using a **16-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). The default weights sum to `1.0`; custom weights are renormalized by `normalizeScoringWeights()`. Two of the sixteen — `cacheAffinity` and `resetWindowAffinity` — carry a default weight of `0`; `reliability` carries `0` in `DEFAULT_WEIGHTS` but `0.03` in generic packs and `0.04` in `reliability-first`, and `quality` carries `0.02` in packs (`0.03` in `quality-first`): they are still computed for every candidate, and `cacheAffinity` gates prompt-cache deduplication outside the score, so the zero-default factors simply do not vote by default while packs do.
+The Auto-Combo Engine dynamically selects the best provider/model for each request using a **16-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). The default weights sum to `1.0`; custom weights are renormalized by `normalizeScoringWeights()`. Two of the sixteen — `cacheAffinity` and `resetWindowAffinity` — carry a default weight of `0`; `reliability` carries `0.08` in `DEFAULT_WEIGHTS` but `0.03` in generic packs and `0.04` in `reliability-first`, and `quality` carries `0.02` in packs (`0.03` in `quality-first`): they are still computed for every candidate, and `cacheAffinity` gates prompt-cache deduplication outside the score, so the zero-default factors simply do not vote by default while packs do.
 
 ![Auto-Combo 16-factor scoring](../diagrams/exported/auto-combo-scoring.svg)
 
@@ -192,24 +192,24 @@ The Auto-Combo Engine dynamically selects the best provider/model for each reque
 
 | Factor                | Default Weight | Description                                                                                                                                                                                    |
 | :-------------------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quota`               | 0.1429         | Remaining quota / rate-limit headroom [0..1]                                                                                                                                                   |
-| `health`              | 0.1605         | Health score from circuit breaker (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                        |
-| `costInv`             | 0.1429         | Inverse **blended** cost (60% input + 40% output token price, normalized) — cheaper = higher score                                                                                             |
-| `latencyInv`          | 0.1143         | Inverse p95 latency normalized to pool — faster = higher score                                                                                                                                 |
-| `taskFit`             | 0.0762         | Task-type fitness (coding, review, planning, analysis, debugging, docs)                                                                                                                        |
-| `stability`           | 0.0476         | Variance-based stability from latency standard deviation — a candidate whose response time swings scores lower                                                                                 |
-| `tierPriority`        | 0.0476         | Account-tier priority — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                           |
-| `tierAffinity`        | 0.0476         | Affinity between the candidate's tier and the manifest-recommended tier                                                                                                                        |
-| `specificityMatch`    | 0.0476         | Match between request specificity (manifest hint) and model tier                                                                                                                               |
-| `contextAffinity`     | 0.0476         | Affinity between the request's context-window need and the model's context window                                                                                                              |
-| `sessionAvailability` | 0.0476         | OAuth session availability of the candidate connection for this session (`getOAuthSessionAvailability()`; non-OAuth connections score 1.0)                                                     |
-| `connectionDensity`   | 0.0476         | Spreads load across connections of the same provider (anti-concentration)                                                                                                                      |
+| `quota`               | 0.1267         | Remaining quota / rate-limit headroom [0..1]                                                                                                                                                   |
+| `health`              | 0.1423         | Health score from circuit breaker (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                                                        |
+| `costInv`             | 0.1267         | Inverse **blended** cost (60% input + 40% output token price, normalized) — cheaper = higher score                                                                                             |
+| `latencyInv`          | 0.1013         | Inverse p95 latency normalized to pool — faster = higher score                                                                                                                                 |
+| `taskFit`             | 0.0676         | Task-type fitness (coding, review, planning, analysis, debugging, docs)                                                                                                                        |
+| `stability`           | 0.0422         | Variance-based stability from latency standard deviation — a candidate whose response time swings scores lower                                                                                 |
+| `tierPriority`        | 0.0422         | Account-tier priority — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                                           |
+| `tierAffinity`        | 0.0422         | Affinity between the candidate's tier and the manifest-recommended tier                                                                                                                        |
+| `specificityMatch`    | 0.0422         | Match between request specificity (manifest hint) and model tier                                                                                                                               |
+| `contextAffinity`     | 0.0422         | Affinity between the request's context-window need and the model's context window                                                                                                              |
+| `sessionAvailability` | 0.0422         | OAuth session availability of the candidate connection for this session (`getOAuthSessionAvailability()`; non-OAuth connections score 1.0)                                                     |
+| `connectionDensity`   | 0.0422         | Spreads load across connections of the same provider (anti-concentration)                                                                                                                      |
 | `cacheAffinity`       | 0.00           | Rendezvous-hash affinity toward the connection likeliest to already hold this request's prompt-cache prefix (`open-sse/services/combo/promptCacheAffinity.ts`); disabled by default (#8008)    |
 | `resetWindowAffinity` | 0.00           | Bias toward connections whose quota reset window is favorable (disabled by default)                                                                                                            |
-| `quality`             | 0.03           | Feedback-driven output-quality signal from the routing-event quality tracker; candidates without observations receive a neutral 0.5                                                            |
-| `reliability`         | 0.00           | Observed success share, `1 - failureRate`, from 24h of usage history behind a ten-sample floor (real-time metrics otherwise); candidates with no observations read as 1.0. Disabled by default |
+| `quality`             | 0.06           | Feedback-driven output-quality signal from the routing-event quality tracker; candidates without observations receive a neutral 0.5                                                            |
+| `reliability`         | 0.08           | Observed success share, `1 - failureRate`, from 24h of usage history behind a ten-sample floor (real-time metrics otherwise); candidates with no observations read as 1.0. Disabled by default |
 
-**Sum:** `0.1429 + 0.1605 + 0.1429 + 0.1143 + 0.0762 + (7 × 0.0476) + 0.00 + 0.00 + 0.03 + 0.00 = 1.0` as declared in `DEFAULT_WEIGHTS`; user-configured weights are renormalized into a distribution by `normalizeScoringWeights()` before scoring.
+**Sum:** `0.1267 + 0.1423 + 0.1267 + 0.1013 + 0.0676 + (7 × 0.0422) + 0.00 + 0.00 + 0.06 + 0.08 = 1.0` as declared in `DEFAULT_WEIGHTS`; user-configured weights are renormalized into a distribution by `normalizeScoringWeights()` before scoring.
 
 ## Mode Packs
 
@@ -235,7 +235,7 @@ The Auto-Combo Engine dynamically selects the best provider/model for each reque
 
 Notes:
 
-- **Packs carry `quality` and `reliability`** (`quality 0.02`, `quality-first 0.03`; `reliability 0.03`, `reliability-first 0.04`) and replace the weight map wholesale (`weights = pack`, not a merge). `DEFAULT_WEIGHTS` carries `quality 0.03 / reliability 0`; selecting `balanced`/`default` keeps those defaults, selecting a pack uses the pack's values above. On a cold pool (no observations yet, so `quality 0.5` and `reliability 1`) these two factors add `+0.04` under a generic pack (`0.03 + 0.01`), `+0.045` under `quality-first` and `+0.05` under `reliability-first`.
+- **Packs carry `quality` and `reliability`** (`quality 0.02`, `quality-first 0.03`; `reliability 0.03`, `reliability-first 0.04`) and replace the weight map wholesale (`weights = pack`, not a merge). `DEFAULT_WEIGHTS` carries `quality 0.06 / reliability 0.08`; selecting `balanced`/`default` keeps those defaults, selecting a pack uses the pack's values above. On a cold pool (no observations yet, so `quality 0.5` and `reliability 1`) these two factors add `+0.04` under a generic pack (`0.03 + 0.01`), `+0.045` under `quality-first` and `+0.05` under `reliability-first`.
 - `tierAffinity`, `specificityMatch` and `resetWindowAffinity` are explicitly `0` in every pack.
 - Each pack's emphasis at a glance:
   - **ship-fast** → latencyInv 0.3048 + health 0.2667 (low-latency, healthy connections)
@@ -763,7 +763,7 @@ Including the bare `auto` (default) plus the 6 `AutoVariant` values declared in 
 ## How tiers fit Auto-Combo
 
 The 16-factor scoring function (`open-sse/services/autoCombo/scoring.ts`) treats tier
-membership as two signals: `tierPriority` (0.0476) and `tierAffinity` (0.0476). See the
+membership as two signals: `tierPriority` (0.0422) and `tierAffinity` (0.0422). See the
 canonical [scoring factor table](#how-it-works-persisted-auto-combos) above for the full
 `DEFAULT_WEIGHTS` set — the per-pack overrides (ship-fast/cost-saver/quality-first/
 offline-friendly) are listed in the "Weight profiles per pack" table.

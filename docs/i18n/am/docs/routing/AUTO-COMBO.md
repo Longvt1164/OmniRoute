@@ -185,7 +185,7 @@ curl -X POST http://localhost:20128/v1/chat/completions \
 
 ## እንዴት እንደሚሠራ (Persisted Auto-Combos)
 
-Auto-Combo Engine ለእያንዳንዱ ጥያቄ ምርጡን አቅራቢ/ሞዴል በተለዋዋጭ ሁኔታ የሚመርጠው **ባለ16-ንጥረ ነገር የውጤት አሰጣጥ ፈንክሽን** (`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS` ውስጥ የተገለጸ) በመጠቀም ነው። ነባሪ ክብደቶቹ ድምር `1.0` ነው፤ ብጁ ክብደቶች በ`normalizeScoringWeights()` እንደገና መደበኛ ይደረጋሉ። ከአሥራ ስድስቱ ውስጥ ሁለቱ — `cacheAffinity` እና `resetWindowAffinity` — ነባሪ ክብደታቸው `0` ነው፤ `reliability` በ`DEFAULT_WEIGHTS` ውስጥ `0`፣ ነገር ግን በአጠቃላይ ጥቅሎች ውስጥ `0.03` እና በ`reliability-first` ውስጥ `0.04` ክብደት አለው፣ `quality` ደግሞ በጥቅሎች ውስጥ `0.02` (በ`quality-first` ውስጥ `0.03`) ክብደት አለው፦ እነዚህ አሁንም ለእያንዳንዱ ዕጩ ይሰላሉ፣ እና `cacheAffinity` ከውጤቱ ውጭ የጥያቄ መሸጎጫ ድግግሞሽ ማስወገድን ይቆጣጠራል፤ ስለዚህ ዜሮ ነባሪ ክብደት ያላቸው ንጥረ ነገሮች በነባሪነት ድምፅ አይሰጡም፣ ጥቅሎቹ ግን ድምፅ ይሰጣሉ።
+Auto-Combo Engine ለእያንዳንዱ ጥያቄ ምርጡን አቅራቢ/ሞዴል በተለዋዋጭ ሁኔታ የሚመርጠው **ባለ16-ንጥረ ነገር የውጤት አሰጣጥ ፈንክሽን** (`open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS` ውስጥ የተገለጸ) በመጠቀም ነው። ነባሪ ክብደቶቹ ድምር `1.0` ነው፤ ብጁ ክብደቶች በ`normalizeScoringWeights()` እንደገና መደበኛ ይደረጋሉ። ከአሥራ ስድስቱ ውስጥ ሁለቱ — `cacheAffinity` እና `resetWindowAffinity` — ነባሪ ክብደታቸው `0` ነው፤ `reliability` በ`DEFAULT_WEIGHTS` ውስጥ `0.08`፣ ነገር ግን በአጠቃላይ ጥቅሎች ውስጥ `0.03` እና በ`reliability-first` ውስጥ `0.04` ክብደት አለው፣ `quality` ደግሞ በጥቅሎች ውስጥ `0.02` (በ`quality-first` ውስጥ `0.03`) ክብደት አለው፦ እነዚህ አሁንም ለእያንዳንዱ ዕጩ ይሰላሉ፣ እና `cacheAffinity` ከውጤቱ ውጭ የጥያቄ መሸጎጫ ድግግሞሽ ማስወገድን ይቆጣጠራል፤ ስለዚህ ዜሮ ነባሪ ክብደት ያላቸው ንጥረ ነገሮች በነባሪነት ድምፅ አይሰጡም፣ ጥቅሎቹ ግን ድምፅ ይሰጣሉ።
 
 ![የAuto-Combo ባለ16-ንጥረ ነገር የውጤት አሰጣጥ](../diagrams/exported/auto-combo-scoring.svg)
 
@@ -193,24 +193,24 @@ Auto-Combo Engine ለእያንዳንዱ ጥያቄ ምርጡን አቅራቢ/ሞ�
 
 | ንጥረ ነገር               | ነባሪ ክብደት | መግለጫ                                                                                                                                                               |
 | :-------------------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `quota`               | 0.1429   | የቀረው ኮታ / የፍጥነት ገደብ ትርፍ አቅም [0..1]                                                                                                                                 |
-| `health`              | 0.1605   | ከcircuit breaker የሚገኝ የጤንነት ውጤት (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                              |
-| `costInv`             | 0.1429   | የ**ተቀናጀ** ወጪ ተገላቢጦሽ (60% የግቤት + 40% የውጤት token ዋጋ፣ መደበኛ የተደረገ) — ዋጋው ባነሰ መጠን ውጤቱ ከፍ ይላል                                                                            |
-| `latencyInv`          | 0.1143   | ከpool አንጻር መደበኛ የተደረገ የp95 መዘግየት ተገላቢጦሽ — ፈጣን በሆነ መጠን ውጤቱ ከፍ ይላል                                                                                                   |
-| `taskFit`             | 0.0762   | ከተግባር ዓይነት ጋር ያለ ተስማሚነት (ኮድ መጻፍ፣ ግምገማ፣ ዕቅድ ማውጣት፣ ትንተና፣ ስህተት ማረም፣ ሰነድ ማዘጋጀት)                                                                                        |
-| `stability`           | 0.0476   | በመዘግየት መደበኛ ልዩነት ላይ የተመሠረተ መረጋጋት — የምላሽ ጊዜው በከፍተኛ ሁኔታ የሚዋዥቅ ዕጩ ዝቅተኛ ውጤት ያገኛል                                                                                       |
-| `tierPriority`        | 0.0476   | የመለያ ደረጃ ቅድሚያ — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                       |
-| `tierAffinity`        | 0.0476   | በዕጩው ደረጃ እና በmanifest የተመከረው ደረጃ መካከል ያለ ቅርርብ                                                                                                                      |
-| `specificityMatch`    | 0.0476   | በጥያቄው ዝርዝርነት (የmanifest ፍንጭ) እና በሞዴሉ ደረጃ መካከል ያለ ተዛማጅነት                                                                                                            |
-| `contextAffinity`     | 0.0476   | ጥያቄው በሚፈልገው የcontext-window መጠን እና በሞዴሉ context window መካከል ያለ ቅርርብ                                                                                                |
-| `sessionAvailability` | 0.0476   | ለዚህ session የዕጩው connection የOAuth session ተገኝነት (`getOAuthSessionAvailability()`፤ OAuth ያልሆኑ connections 1.0 ውጤት ያገኛሉ)                                            |
-| `connectionDensity`   | 0.0476   | ጭነትን በተመሳሳይ አቅራቢ connections መካከል ያሰራጫል (ማከማቸትን የሚከላከል)                                                                                                            |
+| `quota`               | 0.1267   | የቀረው ኮታ / የፍጥነት ገደብ ትርፍ አቅም [0..1]                                                                                                                                 |
+| `health`              | 0.1423   | ከcircuit breaker የሚገኝ የጤንነት ውጤት (CLOSED=1.0, HALF_OPEN=0.5, OPEN=0.0)                                                                                              |
+| `costInv`             | 0.1267   | የ**ተቀናጀ** ወጪ ተገላቢጦሽ (60% የግቤት + 40% የውጤት token ዋጋ፣ መደበኛ የተደረገ) — ዋጋው ባነሰ መጠን ውጤቱ ከፍ ይላል                                                                            |
+| `latencyInv`          | 0.1013   | ከpool አንጻር መደበኛ የተደረገ የp95 መዘግየት ተገላቢጦሽ — ፈጣን በሆነ መጠን ውጤቱ ከፍ ይላል                                                                                                   |
+| `taskFit`             | 0.0676   | ከተግባር ዓይነት ጋር ያለ ተስማሚነት (ኮድ መጻፍ፣ ግምገማ፣ ዕቅድ ማውጣት፣ ትንተና፣ ስህተት ማረም፣ ሰነድ ማዘጋጀት)                                                                                        |
+| `stability`           | 0.0422   | በመዘግየት መደበኛ ልዩነት ላይ የተመሠረተ መረጋጋት — የምላሽ ጊዜው በከፍተኛ ሁኔታ የሚዋዥቅ ዕጩ ዝቅተኛ ውጤት ያገኛል                                                                                       |
+| `tierPriority`        | 0.0422   | የመለያ ደረጃ ቅድሚያ — Ultra=1.0, Pro=0.67, Standard=0.33, Free=0.0                                                                                                       |
+| `tierAffinity`        | 0.0422   | በዕጩው ደረጃ እና በmanifest የተመከረው ደረጃ መካከል ያለ ቅርርብ                                                                                                                      |
+| `specificityMatch`    | 0.0422   | በጥያቄው ዝርዝርነት (የmanifest ፍንጭ) እና በሞዴሉ ደረጃ መካከል ያለ ተዛማጅነት                                                                                                            |
+| `contextAffinity`     | 0.0422   | ጥያቄው በሚፈልገው የcontext-window መጠን እና በሞዴሉ context window መካከል ያለ ቅርርብ                                                                                                |
+| `sessionAvailability` | 0.0422   | ለዚህ session የዕጩው connection የOAuth session ተገኝነት (`getOAuthSessionAvailability()`፤ OAuth ያልሆኑ connections 1.0 ውጤት ያገኛሉ)                                            |
+| `connectionDensity`   | 0.0422   | ጭነትን በተመሳሳይ አቅራቢ connections መካከል ያሰራጫል (ማከማቸትን የሚከላከል)                                                                                                            |
 | `cacheAffinity`       | 0.00     | የዚህን ጥያቄ የprompt-cache ቅድመ ቅጥያ ቀድሞውኑ ይዞ ሊሆን ወደሚችለው connection የሚያደላ Rendezvous-hash ቅርርብ (`open-sse/services/combo/promptCacheAffinity.ts`)፤ በነባሪነት ተሰናክሏል (#8008) |
 | `resetWindowAffinity` | 0.00     | የኮታ ዳግም ማስጀመሪያ window ምቹ ወደሆነላቸው connections የሚያደላ (በነባሪነት ተሰናክሏል)                                                                                                 |
-| `quality`             | 0.03     | በግብረመልስ የሚመራ፣ ከrouting-event quality tracker የሚገኝ የውጤት-ጥራት ምልክት፤ ምልከታ የሌላቸው ዕጩዎች ገለልተኛ 0.5 ያገኛሉ                                                                    |
-| `reliability`         | 0.00     | ከአሥር-ናሙና ዝቅተኛ ገደብ በስተጀርባ ካለ የ24h አጠቃቀም ታሪክ የተገኘ የታየ የስኬት ድርሻ፣ `1 - failureRate` (ካልሆነ የእውነተኛ ጊዜ መለኪያዎች)፤ ምልከታ የሌላቸው ዕጩዎች እንደ 1.0 ይቆጠራሉ። በነባሪነት ተሰናክሏል              |
+| `quality`             | 0.06     | በግብረመልስ የሚመራ፣ ከrouting-event quality tracker የሚገኝ የውጤት-ጥራት ምልክት፤ ምልከታ የሌላቸው ዕጩዎች ገለልተኛ 0.5 ያገኛሉ                                                                    |
+| `reliability`         | 0.08     | ከአሥር-ናሙና ዝቅተኛ ገደብ በስተጀርባ ካለ የ24h አጠቃቀም ታሪክ የተገኘ የታየ የስኬት ድርሻ፣ `1 - failureRate` (ካልሆነ የእውነተኛ ጊዜ መለኪያዎች)፤ ምልከታ የሌላቸው ዕጩዎች እንደ 1.0 ይቆጠራሉ። በነባሪነት ተሰናክሏል              |
 
-**ድምር፦** በ`DEFAULT_WEIGHTS` እንደተገለጸው `0.1429 + 0.1605 + 0.1429 + 0.1143 + 0.0762 + (7 × 0.0476) + 0.00 + 0.00 + 0.03 + 0.00 = 1.0`፤ በተጠቃሚ የተዋቀሩ ክብደቶች ውጤት ከመሰጠቱ በፊት በ`normalizeScoringWeights()` ወደ ስርጭት እንደገና መደበኛ ይደረጋሉ።
+**ድምር፦** በ`DEFAULT_WEIGHTS` እንደተገለጸው `0.1267 + 0.1423 + 0.1267 + 0.1013 + 0.0676 + (7 × 0.0422) + 0.00 + 0.00 + 0.06 + 0.08 = 1.0`፤ በተጠቃሚ የተዋቀሩ ክብደቶች ውጤት ከመሰጠቱ በፊት በ`normalizeScoringWeights()` ወደ ስርጭት እንደገና መደበኛ ይደረጋሉ።
 
 ## የሁነታ ጥቅሎች
 
@@ -236,7 +236,7 @@ Auto-Combo Engine ለእያንዳንዱ ጥያቄ ምርጡን አቅራቢ/ሞ�
 
 ማስታወሻዎች፦
 
-- **ጥቅሎቹ `quality` እና `reliability`ን ይይዛሉ** (`quality 0.02`፣ `quality-first 0.03`፤ `reliability 0.03`፣ `reliability-first 0.04`) እና የክብደት ካርታውን በሙሉ ይተካሉ (`weights = pack`፣ ውህደት አይደለም)። `DEFAULT_WEIGHTS` `quality 0.03 / reliability 0`ን ይይዛል፤ `balanced`/`default`ን መምረጥ እነዚያን ነባሪዎች እንዳሉ ያቆያል፣ ጥቅልን መምረጥ ግን ከላይ ያሉትን የጥቅሉን እሴቶች ይጠቀማል። በቀዝቃዛ ፑል ላይ (እስካሁን ምንም ምልከታ የሌለበት፣ ስለዚህ `quality 0.5` እና `reliability 1`) እነዚህ ሁለት ምክንያቶች በአጠቃላይ ጥቅል ስር `+0.04` (`0.03 + 0.01`)፣ በ`quality-first` ስር `+0.045` እና በ`reliability-first` ስር `+0.05` ይጨምራሉ።
+- **ጥቅሎቹ `quality` እና `reliability`ን ይይዛሉ** (`quality 0.02`፣ `quality-first 0.03`፤ `reliability 0.03`፣ `reliability-first 0.04`) እና የክብደት ካርታውን በሙሉ ይተካሉ (`weights = pack`፣ ውህደት አይደለም)። `DEFAULT_WEIGHTS` `quality 0.06 / reliability 0.08`ን ይይዛል፤ `balanced`/`default`ን መምረጥ እነዚያን ነባሪዎች እንዳሉ ያቆያል፣ ጥቅልን መምረጥ ግን ከላይ ያሉትን የጥቅሉን እሴቶች ይጠቀማል። በቀዝቃዛ ፑል ላይ (እስካሁን ምንም ምልከታ የሌለበት፣ ስለዚህ `quality 0.5` እና `reliability 1`) እነዚህ ሁለት ምክንያቶች በአጠቃላይ ጥቅል ስር `+0.04` (`0.03 + 0.01`)፣ በ`quality-first` ስር `+0.045` እና በ`reliability-first` ስር `+0.05` ይጨምራሉ።
 - `tierAffinity`፣ `specificityMatch` እና `resetWindowAffinity` በእያንዳንዱ ጥቅል ውስጥ በግልጽ `0` ተብለው ተወስነዋል።
 - የእያንዳንዱ ጥቅል ትኩረት በአጭሩ፦
   - **ship-fast** → latencyInv 0.3048 + health 0.2667 (ዝቅተኛ መዘግየት ያላቸው፣ ጤናማ ግንኙነቶች)
@@ -742,7 +742,7 @@ SLA-aware መስኮች፦
 ## ደረጃዎች ከAuto-Combo ጋር እንዴት እንደሚጣጣሙ
 
 ባለ16-ፋክተር የውጤት አሰጣጥ ተግባሩ (`open-sse/services/autoCombo/scoring.ts`) የደረጃ
-አባልነትን እንደ ሁለት ምልክቶች ይጠቀማል፦ `tierPriority` (0.0476) እና `tierAffinity` (0.0476)። ሙሉውን
+አባልነትን እንደ ሁለት ምልክቶች ይጠቀማል፦ `tierPriority` (0.0422) እና `tierAffinity` (0.0422)። ሙሉውን
 የ`DEFAULT_WEIGHTS` ስብስብ ለማየት ከላይ ያለውን ይፋዊ [የውጤት አሰጣጥ ፋክተሮች ሰንጠረዥ](#how-it-works-persisted-auto-combos)
 ይመልከቱ — የእያንዳንዱ ጥቅል ማሻሻያዎች (ship-fast/cost-saver/quality-first/
 offline-friendly) «የክብደት መገለጫዎች በየጥቅሉ» ሰንጠረዥ ውስጥ ተዘርዝረዋል።

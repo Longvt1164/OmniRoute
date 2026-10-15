@@ -192,7 +192,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }` വെളി�
 
 - `open-sse/services/autoCombo/scoring.ts`-ലെ `ScoringFactors.quality` /
   `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. ആകെ തുക 1.0 ആയി തുടരുന്നു.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. ആകെ തുക 1.0 ആയി തുടരുന്നു.
 - `buildAutoCandidates`, ട്രാക്കറിൽനിന്ന് `candidate.quality` പൂരിപ്പിക്കുന്നു;
   ഡാറ്റയില്ലാത്ത കാൻഡിഡേറ്റുകൾക്ക് ഡിഫോൾട്ടായി നിഷ്പക്ഷമായ **0.5** ലഭിക്കുന്നു
   (ഒരു കോൾഡ് കാൻഡിഡേറ്റിന് ബൂസ്റ്റോ പിഴയോ ലഭിക്കുന്നില്ല).

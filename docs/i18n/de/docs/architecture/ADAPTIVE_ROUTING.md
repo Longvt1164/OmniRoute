@@ -196,7 +196,7 @@ Dies fließt als Scoring-Faktor `quality` in den Auto-Combo-Scorer ein:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` in
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1605, `quality` 0,03. Die Summe bleibt 1,0.
+- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1423, `quality` 0,06, `reliability` 0,08. Die Summe bleibt 1,0.
 - `buildAutoCandidates` befüllt `candidate.quality` aus dem Tracker; Kandidaten
   ohne Daten erhalten standardmäßig den neutralen Wert **0,5** (ein kalter Kandidat
   wird weder bevorzugt noch benachteiligt).

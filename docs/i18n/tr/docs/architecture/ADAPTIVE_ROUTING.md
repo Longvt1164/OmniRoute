@@ -193,7 +193,7 @@ Bu, `quality` puanlama faktörü olarak otomatik kombinasyon puanlayıcısını 
 
 - `open-sse/services/autoCombo/scoring.ts` içindeki `ScoringFactors.quality` /
   `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Toplam 1.0 olarak kalır.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Toplam 1.0 olarak kalır.
 - `buildAutoCandidates`, `candidate.quality` değerini izleyiciden doldurur; verisi
   olmayan adaylar varsayılan olarak tarafsız **0.5** değerini alır (soğuk bir aday
   ne desteklenir ne de cezalandırılır).

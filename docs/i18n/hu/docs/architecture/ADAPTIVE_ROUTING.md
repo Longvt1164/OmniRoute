@@ -184,7 +184,7 @@ táplálja:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` az
   `open-sse/services/autoCombo/scoring.ts` fájlban.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Az összeg továbbra
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Az összeg továbbra
   is 1.0.
 - A `buildAutoCandidates` a nyomkövetőből tölti fel a `candidate.quality`
   értékét; az adatokkal nem rendelkező jelöltek alapértelmezett értéke a

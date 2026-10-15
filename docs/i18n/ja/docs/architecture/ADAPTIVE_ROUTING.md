@@ -178,7 +178,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }` を公開し�
 
 - `open-sse/services/autoCombo/scoring.ts` 内の
   `ScoringFactors.quality` / `ScoringWeights.quality`。
-- `DEFAULT_WEIGHTS`: `health` は 0.1905 → 0.1605、`quality` は 0.03。
+- `DEFAULT_WEIGHTS`: `health` は 0.1905 → 0.1423、`quality` は 0.06、`reliability` は 0.08。
   合計は 1.0 のままです。
 - `buildAutoCandidates` はトラッカーから `candidate.quality` を設定します。
   データのない候補は、デフォルトで中立値 **0.5** になります

@@ -192,7 +192,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`.
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` у
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Збир остаје 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Збир остаје 1.0.
 - `buildAutoCandidates` попуњава `candidate.quality` из пратиоца; кандидати без
   података подразумевано добијају неутралних **0.5** (нови кандидат није ни
   фаворизован ни кажњен).

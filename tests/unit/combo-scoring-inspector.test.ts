@@ -297,9 +297,15 @@ test("configured auto preview uses live evaluation scores and zero quota contrib
     assert.equal(quota?.source, "runtime");
     assert.equal(quota?.weight, 0);
     assert.equal(quota?.contribution, 0);
-    assert.equal(
-      target.score,
-      Number(target.factors.reduce((sum, factor) => sum + factor.contribution, 0).toFixed(4))
+    // `target.score` and each `contribution` are rounded to 4 decimals
+    // independently, so summing the rounded contributions can differ from the
+    // rounded total by up to one 4-dp unit (0.5154 vs 0.5155). Compare at the
+    // display precision with a one-unit allowance; this still catches any real
+    // scoring divergence.
+    const summed = target.factors.reduce((sum, factor) => sum + factor.contribution, 0);
+    assert.ok(
+      Math.abs(Number(target.score.toFixed(4)) - Number(summed.toFixed(4))) <= 1e-4,
+      `score (${target.score}) must equal the sum of its contributions (${summed}) within display precision`
     );
   }
 });

@@ -171,7 +171,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }` ကို ဖ�
 ၎င်းကို `quality` scoring factor အဖြစ် auto-combo scorer ထဲသို့ ပေးပို့သည်-
 
 - `open-sse/services/autoCombo/scoring.ts` ရှိ `ScoringFactors.quality` / `ScoringWeights.quality`။
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605၊ `quality` 0.03။ စုစုပေါင်းသည် 1.0 အဖြစ် ဆက်ရှိသည်။
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423၊ `quality` 0.06။ `reliability` 0.08။ စုစုပေါင်းသည် 1.0 အဖြစ် ဆက်ရှိသည်။
 - `buildAutoCandidates` သည် tracker မှ `candidate.quality` ကို ဖြည့်သွင်းသည်။ ဒေတာမရှိသော candidate များအတွက်
   မူလတန်ဖိုးမှာ ကြားနေ **0.5** ဖြစ်သည် (cold candidate တစ်ခုသည် အားပေးမြှင့်တင်ခြင်းလည်း မခံရသကဲ့သို့
   အပြစ်ပေးခြင်းလည်း မခံရပါ)။

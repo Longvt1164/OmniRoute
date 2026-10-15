@@ -50,22 +50,22 @@ export type IntelligentProviderScore = {
 // scorer would pull the tier resolver and per-provider cost data into the
 // browser bundle. The test is what makes the copy safe.
 export const DEFAULT_INTELLIGENT_WEIGHTS: IntelligentRoutingWeights = {
-  quota: 0.1429,
-  health: 0.1605,
-  costInv: 0.1429,
-  latencyInv: 0.1143,
-  taskFit: 0.0762,
-  stability: 0.0476,
-  tierPriority: 0.0476,
-  tierAffinity: 0.0476,
-  specificityMatch: 0.0476,
-  contextAffinity: 0.0476,
+  quota: 0.1267,
+  health: 0.1423,
+  costInv: 0.1267,
+  latencyInv: 0.1013,
+  taskFit: 0.0676,
+  stability: 0.0422,
+  tierPriority: 0.0422,
+  tierAffinity: 0.0422,
+  specificityMatch: 0.0422,
+  contextAffinity: 0.0422,
   cacheAffinity: 0,
-  sessionAvailability: 0.0476,
+  sessionAvailability: 0.0422,
   resetWindowAffinity: 0,
-  connectionDensity: 0.0476,
-  quality: 0.03,
-  reliability: 0,
+  connectionDensity: 0.0422,
+  quality: 0.06,
+  reliability: 0.08,
 };
 
 export const MODE_PACK_OPTIONS = [

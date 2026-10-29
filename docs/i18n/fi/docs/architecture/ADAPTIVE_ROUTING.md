@@ -175,7 +175,7 @@ Tämä syötetään automaattisen yhdistelmän pisteyttäjälle `quality`-pistey
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` tiedostossa
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Summa pysyy arvossa 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Summa pysyy arvossa 1.0.
 - `buildAutoCandidates` täyttää `candidate.quality`-arvon seurannasta; ehdokkaat,
   joista ei ole tietoja, saavat oletusarvoisesti neutraalin arvon **0.5** (kylmää ehdokasta ei suosita eikä
   rangaista).

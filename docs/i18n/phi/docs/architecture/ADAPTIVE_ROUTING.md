@@ -187,7 +187,7 @@ Ipinapasa ito sa auto-combo scorer bilang scoring factor na `quality`:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` sa
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Nananatiling 1.0 ang kabuuan.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Nananatiling 1.0 ang kabuuan.
 - Pinupunan ng `buildAutoCandidates` ang `candidate.quality` mula sa tracker; ang mga candidate
   na walang data ay nagde-default sa neutral na **0.5** (ang cold candidate ay hindi binibigyan
   ng boost ni pinaparusahan).

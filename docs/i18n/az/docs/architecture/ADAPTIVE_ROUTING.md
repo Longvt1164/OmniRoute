@@ -174,7 +174,7 @@ Bu, `quality` ballama amili kimi avtomatik kombinasiya ballayıcısına ötürü
 
 - `open-sse/services/autoCombo/scoring.ts` daxilində
   `ScoringFactors.quality` / `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Cəm 1.0 olaraq qalır.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Cəm 1.0 olaraq qalır.
 - `buildAutoCandidates`, `candidate.quality` dəyərini izləyicidən götürür;
   məlumatı olmayan namizədlər üçün defolt neytral dəyər **0.5**-dir (soyuq namizəd
   nə gücləndirilir, nə də cəzalandırılır).

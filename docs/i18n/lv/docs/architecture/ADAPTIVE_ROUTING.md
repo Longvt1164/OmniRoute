@@ -187,7 +187,7 @@ Tas tiek padots automātiskās kombinācijas vērtētājam kā `quality` vērtē
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` failā
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Summa paliek 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Summa paliek 1.0.
 - `buildAutoCandidates` aizpilda `candidate.quality` no izsekotāja; kandidātiem
   bez datiem noklusējuma vērtība ir neitrāla — **0.5** (jauns kandidāts netiek nedz izcelts, nedz
   sodīts).

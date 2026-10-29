@@ -190,7 +190,7 @@ skórování `quality`:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` v
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Součet zůstává 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Součet zůstává 1.0.
 - `buildAutoCandidates` nastavuje `candidate.quality` podle trackeru; kandidáti
   bez dat mají výchozí neutrální hodnotu **0.5** (nový kandidát není zvýhodněn
   ani penalizován).

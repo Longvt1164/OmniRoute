@@ -188,7 +188,7 @@ Dette føres ind i auto-combo-scoreren som scoringfaktoren `quality`:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` i
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Summen forbliver 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Summen forbliver 1.0.
 - `buildAutoCandidates` udfylder `candidate.quality` fra trackeren; kandidater
   uden data bruger som standard den neutrale værdi **0.5** (en kold kandidat
   favoriseres eller straffes ikke).

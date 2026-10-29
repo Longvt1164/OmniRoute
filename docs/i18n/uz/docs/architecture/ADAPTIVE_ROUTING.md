@@ -176,7 +176,7 @@ Bu auto-combo baholovchisiga `quality` baholash omili sifatida uzatiladi:
 
 - `open-sse/services/autoCombo/scoring.ts` ichidagi `ScoringFactors.quality` /
   `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Yig‘indi 1.0 bo‘lib qoladi.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Yig‘indi 1.0 bo‘lib qoladi.
 - `buildAutoCandidates` `candidate.quality` qiymatini tracker’dan to‘ldiradi; ma’lumoti
   bo‘lmagan nomzodlar uchun standart neytral qiymat **0.5** bo‘ladi (yangi nomzodning
   bahosi oshirilmaydi ham, pasaytirilmaydi ham).

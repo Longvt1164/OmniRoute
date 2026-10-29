@@ -188,7 +188,7 @@ Detta matas in i auto-combo-poängsättaren som poängfaktorn `quality`:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` i
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1423, `quality` 0,06, `reliability` 0,08. Summan förblir 1,0.
+- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1605, `quality` 0,03. Summan förblir 1,0.
 - `buildAutoCandidates` fyller i `candidate.quality` från spåraren; kandidater
   utan data får det neutrala standardvärdet **0,5** (en kall kandidat varken gynnas eller
   missgynnas).

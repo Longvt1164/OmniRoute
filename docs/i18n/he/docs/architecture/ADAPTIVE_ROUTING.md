@@ -186,7 +186,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`.
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` בתוך
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: ‏`health` מ-0.1905 ל-0.1423, ‏`quality` בערך 0.06, ‏`reliability` 0.08. הסכום נשאר 1.0.
+- `DEFAULT_WEIGHTS`: ‏`health` מ-0.1905 ל-0.1605, ‏`quality` בערך 0.03. הסכום נשאר 1.0.
 - `buildAutoCandidates` מאכלס את `candidate.quality` מתוך העוקב; מועמדים
   ללא נתונים מקבלים כברירת מחדל ערך ניטרלי של **0.5** (מועמד קר אינו
   מקבל חיזוק ואינו נענש).

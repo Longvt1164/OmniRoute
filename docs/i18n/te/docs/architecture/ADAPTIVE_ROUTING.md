@@ -189,7 +189,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`ను బహ�
 
 - `open-sse/services/autoCombo/scoring.ts`లో `ScoringFactors.quality` /
   `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. మొత్తం 1.0గానే ఉంటుంది.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. మొత్తం 1.0గానే ఉంటుంది.
 - `buildAutoCandidates`, ట్రాకర్ నుండి `candidate.quality`ను పాప్యులేట్ చేస్తుంది;
   డేటా లేని అభ్యర్థులు డిఫాల్ట్గా తటస్థ **0.5**ను పొందుతారు (కోల్డ్ అభ్యర్థికి
   బూస్ట్ లేదా జరిమానా ఉండదు).

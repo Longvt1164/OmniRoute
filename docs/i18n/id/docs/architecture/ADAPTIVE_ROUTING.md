@@ -188,7 +188,7 @@ Data ini diberikan kepada penskor auto-combo sebagai faktor penskoran `quality`:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` dalam
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Total tetap 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Total tetap 1.0.
 - `buildAutoCandidates` mengisi `candidate.quality` dari tracker; kandidat tanpa
   data secara default memperoleh nilai netral **0.5** (kandidat baru tidak
   ditingkatkan maupun dihukum).

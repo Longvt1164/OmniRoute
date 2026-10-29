@@ -199,7 +199,7 @@ notation `quality` :
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` dans
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS` : `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. La somme reste égale à 1.0.
+- `DEFAULT_WEIGHTS` : `health` 0.1905 → 0.1605, `quality` 0.03. La somme reste égale à 1.0.
 - `buildAutoCandidates` renseigne `candidate.quality` à partir du suivi ; les candidats
   sans données utilisent par défaut la valeur neutre **0.5** (un candidat sans
   historique n’est ni favorisé ni pénalisé).

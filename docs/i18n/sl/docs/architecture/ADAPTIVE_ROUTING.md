@@ -187,7 +187,7 @@ To se posreduje ocenjevalniku samodejnih kombinacij kot faktor točkovanja `qual
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` v
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1423, `quality` 0,06, `reliability` 0,08. Vsota ostane 1,0.
+- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1605, `quality` 0,03. Vsota ostane 1,0.
 - `buildAutoCandidates` nastavi `candidate.quality` iz sledilnika; kandidati
   brez podatkov privzeto prejmejo nevtralno vrednost **0,5** (hladen kandidat ni niti prednostno obravnavan niti
   kaznovan).

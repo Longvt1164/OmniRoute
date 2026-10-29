@@ -199,7 +199,7 @@ puntuación `quality`:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` en
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. La suma se
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. La suma se
   mantiene en 1.0.
 - `buildAutoCandidates` rellena `candidate.quality` a partir del rastreador; los
   candidatos sin datos adoptan de forma predeterminada el valor neutro **0.5**

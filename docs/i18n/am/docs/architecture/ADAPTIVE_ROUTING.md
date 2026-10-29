@@ -189,7 +189,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`ን ያቀር�
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` በ
   `open-sse/services/autoCombo/scoring.ts` ውስጥ።
-- `DEFAULT_WEIGHTS`፦ `health` 0.1905 → 0.1423፣ `quality` 0.06፣ `reliability` 0.08። ድምሩ 1.0 ሆኖ
+- `DEFAULT_WEIGHTS`፦ `health` 0.1905 → 0.1605፣ `quality` 0.03። ድምሩ 1.0 ሆኖ
   ይቆያል።
 - `buildAutoCandidates` `candidate.quality`ን ከtracker ይሞላል፤ ውሂብ የሌላቸው
   candidates በነባሪ ገለልተኛውን **0.5** ይወስዳሉ (አዲስ candidate አይጠናከርምም

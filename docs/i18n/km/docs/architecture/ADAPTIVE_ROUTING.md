@@ -187,7 +187,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`។
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` នៅក្នុង
   `open-sse/services/autoCombo/scoring.ts`។
-- `DEFAULT_WEIGHTS`៖ `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08។ ផលបូកនៅតែជា 1.0។
+- `DEFAULT_WEIGHTS`៖ `health` 0.1905 → 0.1605, `quality` 0.03។ ផលបូកនៅតែជា 1.0។
 - `buildAutoCandidates` បំពេញ `candidate.quality` ពី tracker; candidate
   ដែលគ្មានទិន្នន័យនឹងប្រើតម្លៃអព្យាក្រឹតលំនាំដើម **0.5** (candidate ថ្មីដែលគ្មានទិន្នន័យ មិនត្រូវបានបង្កើនពិន្ទុ ហើយក៏មិនត្រូវបាន
   ដាក់ទណ្ឌកម្មដែរ)។

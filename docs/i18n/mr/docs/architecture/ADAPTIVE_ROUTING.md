@@ -177,7 +177,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }` उघड क�
 
 - `open-sse/services/autoCombo/scoring.ts` मधील `ScoringFactors.quality` /
   `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. बेरीज 1.0 राहते.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. बेरीज 1.0 राहते.
 - `buildAutoCandidates`, ट्रॅकरमधून `candidate.quality` भरते; डेटा नसलेले
   उमेदवार डीफॉल्टनुसार तटस्थ **0.5** वर असतात (कोल्ड उमेदवाराला ना बूस्ट केले
   जाते ना दंडित).

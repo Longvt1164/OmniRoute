@@ -192,7 +192,7 @@ Dane te zasilają mechanizm punktacji auto-combo jako czynnik punktacji `quality
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` w
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1423, `quality` 0,06, `reliability` 0,08. Suma pozostaje równa 1,0.
+- `DEFAULT_WEIGHTS`: `health` 0,1905 → 0,1605, `quality` 0,03. Suma pozostaje równa 1,0.
 - `buildAutoCandidates` ustawia `candidate.quality` na podstawie danych z trackera;
   kandydaci bez danych domyślnie otrzymują neutralne **0,5** (kandydat bez historii
   nie jest ani promowany, ani karany).

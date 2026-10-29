@@ -180,7 +180,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`։
 
 - `ScoringFactors.quality` / `ScoringWeights.quality`՝
   `open-sse/services/autoCombo/scoring.ts`-ում։
-- `DEFAULT_WEIGHTS`՝ `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08։ Գումարը մնում է 1.0։
+- `DEFAULT_WEIGHTS`՝ `health` 0.1905 → 0.1605, `quality` 0.03։ Գումարը մնում է 1.0։
 - `buildAutoCandidates`-ը tracker-ից լրացնում է `candidate.quality`-ը․ տվյալներ
   չունեցող թեկնածուների համար լռելյայն օգտագործվում է չեզոք **0.5** արժեքը (սառը
   թեկնածուն ո՛չ խրախուսվում է, ո՛չ էլ տուգանվում)։

@@ -176,7 +176,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }` એક્સ�
 
 - `open-sse/services/autoCombo/scoring.ts`માં `ScoringFactors.quality` /
   `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. સરવાળો 1.0 જ રહે છે.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. સરવાળો 1.0 જ રહે છે.
 - `buildAutoCandidates`, ટ્રૅકરમાંથી `candidate.quality` ભરે છે; ડેટા વિનાના
   કૅન્ડિડેટ માટે ડિફૉલ્ટ તટસ્થ **0.5** છે (કોલ્ડ કૅન્ડિડેટને ન તો બૂસ્ટ કરવામાં
   આવે છે કે ન તો દંડિત કરવામાં આવે છે).

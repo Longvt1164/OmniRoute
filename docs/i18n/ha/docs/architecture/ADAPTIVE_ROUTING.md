@@ -191,7 +191,7 @@ Wannan yana ciyar da auto-combo scorer a matsayin `quality` scoring factor:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` a cikin
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Jimilla tana nan 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Jimilla tana nan 1.0.
 - `buildAutoCandidates` yana cika `candidate.quality` daga tracker; candidates
   marasa data suna amfani da neutral **0.5** a matsayin tsoho (cold candidate ba a
   ƙara masa fifiko kuma ba a hukunta shi).

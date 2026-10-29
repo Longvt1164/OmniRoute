@@ -192,7 +192,7 @@ bodovanja `quality`:
 
 - `ScoringFactors.quality` / `ScoringWeights.quality` u
   `open-sse/services/autoCombo/scoring.ts`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. Zbroj ostaje 1.0.
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. Zbroj ostaje 1.0.
 - `buildAutoCandidates` popunjava `candidate.quality` iz alata za praćenje;
   kandidati bez podataka zadano dobivaju neutralnih **0.5** (hladni kandidat nije
   ni favoriziran ni kažnjen).

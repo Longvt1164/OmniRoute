@@ -179,7 +179,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`-ஐ வெள�
 
 - `open-sse/services/autoCombo/scoring.ts`-இல் `ScoringFactors.quality` /
   `ScoringWeights.quality`.
-- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1423, `quality` 0.06, `reliability` 0.08. கூட்டுத்தொகை
+- `DEFAULT_WEIGHTS`: `health` 0.1905 → 0.1605, `quality` 0.03. கூட்டுத்தொகை
   1.0 ஆகவே இருக்கும்.
 - `buildAutoCandidates`, tracker-இலிருந்து `candidate.quality`-ஐ நிரப்புகிறது;
   தரவு இல்லாத candidates இயல்பாக நடுநிலையான **0.5**-ஐப் பெறும் (ஒரு cold

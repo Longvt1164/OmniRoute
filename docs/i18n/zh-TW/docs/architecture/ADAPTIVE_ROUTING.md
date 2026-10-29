@@ -182,7 +182,7 @@ rateLimited, successEwma, latencyEwmaMs, ttftEwmaMs, recencyMs }`。
 
 - `open-sse/services/autoCombo/scoring.ts` 中的
   `ScoringFactors.quality` / `ScoringWeights.quality`。
-- `DEFAULT_WEIGHTS`：`health` 由 0.1905 → 0.1423，`quality` 為 0.06，`reliability` 為 0.08。總和維持 1.0。
+- `DEFAULT_WEIGHTS`：`health` 由 0.1905 → 0.1605，`quality` 為 0.03。總和維持 1.0。
 - `buildAutoCandidates` 會使用追蹤器的資料填入 `candidate.quality`；沒有
   資料的候選項目預設為中立值 **0.5**（冷啟動候選項目既不會獲得加分，也不會
   受到懲罰）。

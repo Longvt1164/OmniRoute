@@ -136,7 +136,7 @@ test("healthy provider A is preferred over backup B, cold C stays neutral", () =
   assert.equal(qualityScoreFor("c", "m"), 0.5);
 });
 
-test("degradation injected into A flips preference to B; recovery restores A's score to B's level", () => {
+test("degradation injected into A flips preference to B; recovery flips it back", () => {
   resetQualityTracker();
   // Phase 0: A and B are otherwise identical; both healthy. A is preferred via
   // stable tie-break, and quality is the only differentiator.
@@ -162,29 +162,11 @@ test("degradation injected into A flips preference to B; recovery restores A's s
   const qualityA = qualityScoreFor("a", "m");
   assert.ok(qualityA < 0.5, `A quality degraded below neutral, got ${qualityA}`);
 
-  // Phase 2: recover A — sustained successes. Quality recovers and A's score is
-  // restored to B's level.
-  //
-  // NOTE: once the `quality` factor carries weight (>0), a fully-recovered A is
-  // numerically TIED with B, not strictly ahead: A's EWMA keeps a ~1e-16 float
-  // deficit from its earlier errors, which the weighted quality term turns into
-  // an order flip. That is float noise (|Δ| ≪ 1e-4), not a meaningful ranking
-  // change — the recovery guarantee below asserts the real intent (A's score is
-  // restored to B's and rises above its degraded value); the order between two
-  // tied providers is not a stable preference.
+  // Phase 2: recover A — sustained successes. Quality recovers and A's
+  // preference is restored.
   for (let i = 0; i < 200; i++) record("a", "m");
   const after = score();
-  const aAfter = after.find((s) => s.target.provider === "a")!.score;
-  const bAfter = after.find((s) => s.target.provider === "b")!.score;
-  const aDuring = during.find((s) => s.target.provider === "a")!.score;
-  assert.ok(
-    aAfter > aDuring,
-    `recovery must raise A's score above its degraded value (${aAfter} vs ${aDuring})`
-  );
-  assert.ok(
-    Math.abs(aAfter - bAfter) <= 1e-4,
-    `recovery must restore A's score to B's level (tie), got a=${aAfter} b=${bAfter}`
-  );
+  assert.equal(bestProvider(after), "a", "recovery must restore A's preference");
 
   // Phase 3: one isolated failure must not destroy A — its quality stays healthy
   // (well above neutral), it just falls marginally behind the now-equally-tied B.

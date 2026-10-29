@@ -3,9 +3,11 @@
  *
  * C1: the route called `isAuthenticated()` without `await`, so the returned
  *     Promise was always truthy and every caller — including anonymous ones —
- *     received connection ids/names, lockouts and per-key error state. Full
- *     detail must be reserved for a management principal; anonymous callers get
- *     the provider-level summary only.
+ *     received connection ids/names, lockouts and per-key error state. The path
+ *     is not a public read-only route, so the authz pipeline classifies it
+ *     MANAGEMENT and an anonymous caller never reaches the handler; the handler
+ *     itself also refuses anonymous callers rather than offering a reduced view
+ *     that production could never serve.
  * H2: models were read from `conn.models`, a column that does not exist on
  *     provider_connections, so the endpoint always reported zero models. Models
  *     live in the synced available-models store keyed by connection id.
@@ -28,6 +30,7 @@ const providersDb = await import("../../../src/lib/db/providers.ts");
 const modelsDb = await import("../../../src/lib/db/models.ts");
 const route = await import("../../../src/app/api/monitoring/model-health/route.ts");
 const { resolveProviderId } = await import("../../../src/shared/constants/providers.ts");
+const { classifyRoute } = await import("../../../src/server/authz/classify.ts");
 
 const URL = "http://localhost:20128/api/monitoring/model-health";
 
@@ -41,7 +44,7 @@ test.before(async () => {
   const connections = await providersDb.getProviderConnections({ provider: "openai" });
   const connection = connections[0];
   assert.ok(connection?.id, "seeded connection must have an id");
-  await modelsDb.replaceSyncedAvailableModelsForConnection("openai", connection.id, [
+  await modelsDb.replaceSyncedAvailableModelsForConnection("openai", String(connection.id), [
     { id: "gpt-4", name: "gpt-4" },
   ]);
 
@@ -66,7 +69,7 @@ test.before(async () => {
   });
   const googleConn = (await providersDb.getProviderConnections({ provider: googleProvider }))[0];
   assert.ok(googleConn?.id, "seeded google connection must have an id");
-  await modelsDb.replaceSyncedAvailableModelsForConnection(googleProvider, googleConn.id, [
+  await modelsDb.replaceSyncedAvailableModelsForConnection(googleProvider, String(googleConn.id), [
     { id: "gemini-test-model", name: "Gemini Test" },
   ]);
 
@@ -80,11 +83,11 @@ test.before(async () => {
   });
   const mistralConn = (await providersDb.getProviderConnections({ provider: mistralProvider }))[0];
   assert.ok(mistralConn?.id, "seeded mistral connection must have an id");
-  await modelsDb.replaceSyncedAvailableModelsForConnection(mistralProvider, mistralConn.id, [
-    {},
-    { id: "", name: "" },
-    { id: "mistral-large-latest", name: "Mistral Large" },
-  ] as never);
+  await modelsDb.replaceSyncedAvailableModelsForConnection(
+    mistralProvider,
+    String(mistralConn.id),
+    [{}, { id: "", name: "" }, { id: "mistral-large-latest", name: "Mistral Large" }] as never
+  );
 });
 
 test.after(() => {
@@ -92,16 +95,21 @@ test.after(() => {
   fs.rmSync(TEST_DATA_DIR, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 });
 
-test("C1: an anonymous caller gets the reduced summary, never connection detail", async () => {
+test("C1: the authz pipeline classifies model-health as a MANAGEMENT route", () => {
+  const classification = classifyRoute("/api/monitoring/model-health", "GET");
+  assert.equal(
+    classification.routeClass,
+    "MANAGEMENT",
+    "model-health exposes connection ids/names and lockouts: it must not be public"
+  );
+});
+
+test("C1: an anonymous caller is refused, never handed connection detail", async () => {
   const res = await route.GET(new Request(URL));
-  assert.equal(res.status, 200, "anonymous access is a summary, not a 401");
+  assert.equal(res.status, 401, "anonymous access must be rejected, as the pipeline does");
 
   const body = await res.json();
-  const openai = body.providers.find((p: { provider: string }) => p.provider === "openai");
-  assert.ok(openai, "the seeded provider must appear in the summary");
-  assert.equal("connections" in openai, false, "anonymous must not receive connection detail");
-  assert.equal("circuitBreakerState" in openai, true);
-  assert.equal(typeof openai.totalModels, "number");
+  assert.equal("providers" in body, false, "a refused caller must not receive any provider data");
 });
 
 test("H2: models are sourced from the synced available-models store", async () => {

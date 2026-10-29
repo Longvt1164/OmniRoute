@@ -7322,6 +7322,58 @@ paths:
         "200":
           description: Health status
 
+  /api/monitoring/model-health:
+    get:
+      tags: [System]
+      summary: Get per-model health states
+      description: >-
+        Management-only report that classifies every synced model on every provider
+        connection as HEALTHY, DEGRADED, RATE_LIMITED, AUTH_FAILED, PROVIDER_DOWN,
+        CONNECTION_BLOCKED, MODEL_LOCKED or UNKNOWN, from the connection state, the
+        provider circuit breaker and the per-model lockout. Includes connection ids
+        and names, so it requires a management principal.
+      parameters:
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only report this provider id
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              [
+                HEALTHY,
+                DEGRADED,
+                RATE_LIMITED,
+                AUTH_FAILED,
+                PROVIDER_DOWN,
+                CONNECTION_BLOCKED,
+                MODEL_LOCKED,
+                UNKNOWN,
+              ]
+          description: Only report models in this state
+        - name: unhealthy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["1"]
+          description: Set to `1` to omit HEALTHY models
+      responses:
+        "200":
+          description: >-
+            `{ timestamp, summary, providers }` — `summary` counts models per state;
+            `providers[]` carries `circuitBreakerState`, `canExecute`, optional
+            `retryAfterMs` and `connections[]` with their `models[]`
+        "401":
+          description: Not a management principal
+        "500":
+          description: Health report failed (sanitized message)
+
   /api/monitoring/compression:
     get:
       tags: [System]
